@@ -2,10 +2,14 @@
 //
 
 #include <iostream>
+#include <conio.h>
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    std::cout << "Press any key to close the console\n";
+	// Pauses the console until some key is pressed
+	_getch();
+	
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
