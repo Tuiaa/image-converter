@@ -18,13 +18,26 @@ void BitmapHelper::createBitmap() {
 
 void BitmapHelper::saveBitmapValues(int width, int height, int bytesPerPixel, unsigned char *pixelDataFromFile) {
 
+	// header
 	bitmap.bitmapFileHeader.filesize = height + HEADER_SIZE + INFO_HEADER_SIZE;
 	bitmap.bitmapFileHeader.dataOffset = HEADER_SIZE + INFO_HEADER_SIZE;
 
+	//infoheader
+	bitmap.dibHeader.infoHeaderSize = INFO_HEADER_SIZE;
 	bitmap.dibHeader.width = width;
 	bitmap.dibHeader.height = height;
+
+	//extra
 	bitmap.bytesPerPixel = bytesPerPixel;
+
 	bitmap.dibHeader.bitsPerPixel = bytesPerPixel * 8;
+	bitmap.dibHeader.compression = NO_COMPRESION;
+	bitmap.dibHeader.imageSize = width * height*bytesPerPixel;
+	bitmap.dibHeader.horizontalResolution = 11811; //300 dpi
+	bitmap.dibHeader.verticalResolution = 11811; //300 dpi
+	bitmap.dibHeader.colorsUsedInColorPalette = MAX_NUMBER_OF_COLORS;
+	bitmap.dibHeader.importantColors = ALL_COLORS_REQUIRED;
+
 	bitmap.pixelData = pixelDataFromFile;
 }
 
@@ -97,43 +110,35 @@ void BitmapHelper::writeBitmap(const char *fileName, int width, int height, int 
 	fwrite(&bitmap.bitmapFileHeader.dataOffset, 4, 1, outputFile);
 
 	//*******INFO*HEADER******//
-	int infoHeaderSize = INFO_HEADER_SIZE;
-	fwrite(&infoHeaderSize, 4, 1, outputFile);
+	//int infoHeaderSize
+	fwrite(&bitmap.dibHeader.infoHeaderSize, 4, 1, outputFile);
 
 	// width and height
-	fwrite(&width, 4, 1, outputFile);
-	fwrite(&height, 4, 1, outputFile);
+	fwrite(&bitmap.dibHeader.width, 4, 1, outputFile);
+	fwrite(&bitmap.dibHeader.height, 4, 1, outputFile);
 
 	// color planes
-	int planes = 1; //always 1
-	fwrite(&planes, 2, 1, outputFile);
+	fwrite(&bitmap.dibHeader.colorPlanes, 2, 1, outputFile);
 
 	// bitsperpixel
-	int bitsPerPixel = bytesPerPixel * 8;
-	fwrite(&bitsPerPixel, 2, 1, outputFile);
+	fwrite(&bitmap.dibHeader.bitsPerPixel, 2, 1, outputFile);
 
 
 	//write compression
-	int compression = NO_COMPRESION;
-	fwrite(&compression, 4, 1, outputFile);
+	fwrite(&bitmap.dibHeader.compression, 4, 1, outputFile);
 
 	//write image size(in bytes)
-	int imageSize = width * height*bytesPerPixel;
-	fwrite(&imageSize, 4, 1, outputFile);
+	fwrite(&bitmap.dibHeader.imageSize, 4, 1, outputFile);
 
 	// resolution
-	int resolutionX = 11811; //300 dpi
-	int resolutionY = 11811; //300 dpi
-	fwrite(&resolutionX, 4, 1, outputFile);
-	fwrite(&resolutionY, 4, 1, outputFile);
+	fwrite(&bitmap.dibHeader.horizontalResolution, 4, 1, outputFile);
+	fwrite(&bitmap.dibHeader.verticalResolution, 4, 1, outputFile);
 
 	// color palette
-	int colorsUsed = MAX_NUMBER_OF_COLORS;
-	fwrite(&colorsUsed, 4, 1, outputFile);
+	fwrite(&bitmap.dibHeader.colorsUsedInColorPalette, 4, 1, outputFile);
 
 	// imporant colors
-	int importantColors = ALL_COLORS_REQUIRED;
-	fwrite(&importantColors, 4, 1, outputFile);
+	fwrite(&bitmap.dibHeader.importantColors, 4, 1, outputFile);
 
 	for (int i = 0; i < totalSize; i++)
 	{

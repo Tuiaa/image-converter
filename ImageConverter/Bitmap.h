@@ -26,9 +26,9 @@ struct BitmapFileHeaderStruct
  *	- Tells the application detailed information about the image
  *	- Information is used to display the image on the screen
  */
-struct DIBHEADER2 {
+struct DIBHeaderStruct {
 	// 0E the size of this header
-	unsigned char sizeOfDIB = 40;
+	int infoHeaderSize;
 	// 12 the bitmap width in pixels
 	int width;
 	// 14 the bitmap height in pixels
@@ -40,14 +40,25 @@ struct DIBHEADER2 {
 	 *	- Number of entries in the color table palette is either 2*n (where n is number of bits per pixel)
 	 *	  or a smaller number specified in the header
 	 */
-	unsigned char colorPlanes = 1;
+	int colorPlanes = 1;
 	// 18 the number of bits per pixel
 	int bitsPerPixel = 3;		// red, green, blue
+
+	//compression
+	int compression;
+
 	// image size
+	int imageSize;
+
 	// horizontal reso
+	int horizontalResolution;
 	// vertical reso
+	int verticalResolution;
+
 	// number of colors in color palette --> 0 to default
-	// num of important color used --> bytes/pixel * 8?
+	int colorsUsedInColorPalette;
+	// num of important color used --> 0 when every color is important
+	int importantColors;
 };
 
 class Bitmap {
@@ -55,7 +66,7 @@ public:
 	// Bitmap file header
 	BitmapFileHeaderStruct bitmapFileHeader;
 	// DIB header?
-	DIBHEADER2 dibHeader;
+	DIBHeaderStruct dibHeader;
 
 	// Color table, its offset is the size of the BITMAPFILEHEADER + the size of the DIBHEADER (+ optional masks)
 	//COLORTABLE2 colorTable;
