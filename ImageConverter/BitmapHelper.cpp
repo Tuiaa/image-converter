@@ -143,7 +143,11 @@ void BitmapHelper::writeBitmap(const char *fileName, int width, int height, int 
 	for (int i = 0; i < totalSize; i++)
 	{
 
-		fwrite(&data_pix_from_saved_bitmap[i], 1, 1, outputFile);
+		fwrite(&data_pix[i], 1, 1, outputFile);
 	}
 	fclose(outputFile);
+}
+
+void BitmapHelper::createTexelBlocksFromBitmap() {
+
 }
