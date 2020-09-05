@@ -79,13 +79,15 @@ void BitmapHelper::readBitmapImageFromFile(const char *fileName, int *width, int
 
 	//// rotate bgr to rgb
 	//unsigned char tmp;
-	//for (int i = 0; i < size; i += 3)
+	//for (int i = 0; i < totalSize; i += 3)
 	//{
-	//	tmp = data_pix[i];
+	//	//tmp = data_pix[i];
 
-	//	data_pix[i] = data_pix[i + 2];
+	//	//data_pix[i] = data_pix[i + 2];
 
-	//	data_pix[i + 2] = tmp;
+	//	//data_pix[i + 2] = tmp;
+
+	//	std::cout << "\nthis pixel color value: " << (int)data_pix[i];
 	//}
 
 }

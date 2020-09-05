@@ -153,11 +153,13 @@
   <ItemGroup>
     <ClCompile Include="Bitmap.cpp" />
     <ClCompile Include="BitmapHelper.cpp" />
+    <ClCompile Include="CompressionHelper.cpp" />
     <ClCompile Include="ImageConverter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bitmap.h" />
     <ClInclude Include="BitmapHelper.h" />
+    <ClInclude Include="CompressionHelper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

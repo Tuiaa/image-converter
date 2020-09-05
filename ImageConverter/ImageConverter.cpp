@@ -5,6 +5,7 @@
 #include <conio.h>
 #include <string>
 #include "BitmapHelper.h"
+#include "CompressionHelper.h"
 
 
 
@@ -37,6 +38,12 @@ int main()
 	bitmapHelper.saveBitmapValues(width, height, bytesPerPixel, bitmapHelper.data_pix);
 
 	bitmapHelper.writeBitmap("img2.bmp", bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.bitmap.bytesPerPixel);
+
+	// COMPRESSION
+	CompressionHelper compressionHelper = CompressionHelper();
+
+	int amountOfChunks = compressionHelper.calculateHowManyChunksAreNeeded(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height);
+	compressionHelper.initializeArrayOfChunks(amountOfChunks);
 
 	std::cout << "\nPress any key to close the console\n";
 	// Pauses the console until some key is pressed
