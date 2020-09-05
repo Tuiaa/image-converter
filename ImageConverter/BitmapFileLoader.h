@@ -19,13 +19,6 @@ public:
 	void createBitmap();
 	void printBitmapFileName();
 	void loadBitmapFromFolder();
-	void createBitmapFile();
 
-	void testHeaderCreation();
-
-	void generateBitmapImage(unsigned char*, char* imageFileName);
-	unsigned char* createBitmapFileHeader(int, int);
-	unsigned char* createBitmapInfoHeader(int height, int width);
-
-	
+	void readBitmapFileHeader();
 };
