@@ -26,9 +26,9 @@ struct DIBHEADER2 {
 	// 0E the size of this header
 	unsigned char sizeOfDIB = 40;
 	// 12 the bitmap width in pixels
-	unsigned char width;
+	int width;
 	// 14 the bitmap height in pixels
-	unsigned char height;
+	int height;
 	// 16 the number of color planes, must be 1?
 	/*
 	 *	- Occurs after bitmap header and dib header (and optional extra bit masks)
@@ -38,7 +38,12 @@ struct DIBHEADER2 {
 	 */
 	unsigned char colorPlanes = 1;
 	// 18 the number of bits per pixel
-	unsigned char bitsPerPixel = 3;		// red, green, blue
+	int bitsPerPixel = 3;		// red, green, blue
+	// image size
+	// horizontal reso
+	// vertical reso
+	// number of colors in color palette --> 0 to default
+	// num of important color used --> bytes/pixel * 8?
 };
 
 
@@ -58,9 +63,12 @@ public:
 	BITMAPFILEHEADER2 bitmapFileHeader;
 	// DIB header?
 	DIBHEADER2 dibHeader;
+
 	// Color table, its offset is the size of the BITMAPFILEHEADER + the size of the DIBHEADER (+ optional masks)
 	//COLORTABLE2 colorTable;
+
+	int bytesPerPixel;
 	// Pixel array
-	PIXELARRAY2 pixelArray;
+	unsigned char* pixelData;
 
 };

@@ -6,6 +6,7 @@
 #include <windowsx.h>
 #include <vector>
 
+
 BitmapFileLoader::BitmapFileLoader(std::string fileName) {
 	bitmapFileName = fileName;
 }
