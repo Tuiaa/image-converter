@@ -152,7 +152,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Bitmap.cpp" />
-    <ClCompile Include="BitmapFileLoader.cpp" />
     <ClCompile Include="BitmapHelper.cpp" />
     <ClCompile Include="ImageConverter.cpp" />
     <ClCompile Include="BitmapTest.cpp" />
@@ -160,7 +159,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bitmap.h" />
-    <ClInclude Include="BitmapFileLoader.h" />
     <ClInclude Include="BitmapHelper.h" />
     <ClInclude Include="BitmapTest.h" />
   </ItemGroup>

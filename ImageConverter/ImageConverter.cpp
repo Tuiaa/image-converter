@@ -4,7 +4,6 @@
 #include <iostream>
 #include <conio.h>
 #include <string>
-#include "BitmapFileLoader.h"
 #include "BitmapTest.h"
 #include "BitmapHelper.h"
 
@@ -170,9 +169,6 @@ int main()
 	int height;
 	int bytesPerPixel;
 
-	//ReadImage("bitmapTestImage.bmp", &width, &height, &bytesPerPixel);
-
-
 	BitmapHelper bitmapHelper = BitmapHelper();
 	bitmapHelper.createBitmap();
 
@@ -182,8 +178,6 @@ int main()
 
 	bitmapHelper.data_pix_from_saved_bitmap = bitmapHelper.bitmap.pixelData;
 	bitmapHelper.data_pix = bitmapHelper.data_pix_from_saved_bitmap;
-
-	//WriteImage("img2.bmp", bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.bitmap.bytesPerPixel);
 
 	bitmapHelper.writeBitmap("img2.bmp", bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.bitmap.bytesPerPixel);
 
