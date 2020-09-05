@@ -46,17 +46,6 @@ struct DIBHEADER2 {
 	// num of important color used --> bytes/pixel * 8?
 };
 
-
-
-/*
- *	- The bits representing the bitmap pixels are packed in rows
- *	- The size of each row is rounded up to a multiple of 4 bytes by padding
- *	- For images with height above 1, multiple padded rows are stored consecutively, forming a pixel array
- */
-struct PIXELARRAY2 {
-
-};
-
 class Bitmap {
 public:
 	// Bitmap file header
@@ -68,7 +57,12 @@ public:
 	//COLORTABLE2 colorTable;
 
 	int bytesPerPixel;
-	// Pixel array
+	
+	/*
+	 *	- The bits representing the bitmap pixels are packed in rows
+	 *	- The size of each row is rounded up to a multiple of 4 bytes by padding
+	 *	- For images with height above 1, multiple padded rows are stored consecutively, forming a pixel array
+	 */
 	unsigned char* pixelData;
 
 };
