@@ -1,12 +1,30 @@
 // ImageConverter.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
-
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <conio.h>
+#include <string>
+#include "BitmapFileLoader.h"
+#include "BitmapTest.h"
 
 int main()
 {
-    std::cout << "Press any key to close the console\n";
+	std::string inputtedFileName;
+	std::cout << "Enter bitmap file name:\n";
+	std::cin >> inputtedFileName;
+
+	//inputtedFileName = "";
+	if (!inputtedFileName.empty()) {
+		BitmapFileLoader bmpFileLoader = BitmapFileLoader(inputtedFileName);
+
+		//bmpFileLoader.printBitmapFileName();
+		bmpFileLoader.loadBitmapFromFolder();
+	}
+	else {
+		std::cout << "Filename was not supported!";
+	}
+
+    std::cout << "\nPress any key to close the console\n";
 	// Pauses the console until some key is pressed
 	_getch();
 	

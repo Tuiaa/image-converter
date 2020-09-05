@@ -151,8 +151,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Bitmap.cpp" />
+    <ClCompile Include="BitmapFileLoader.cpp" />
     <ClCompile Include="ImageConverter.cpp" />
-    <ClCompile Include="Test.cpp" />
+    <ClCompile Include="BitmapTest.cpp" />
+    <ClCompile Include="TestMain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Bitmap.h" />
+    <ClInclude Include="BitmapFileLoader.h" />
+    <ClInclude Include="BitmapTest.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
