@@ -44,6 +44,7 @@ int main()
 
 	int amountOfChunks = compressionHelper.calculateHowManyChunksAreNeeded(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height);
 	compressionHelper.initializeArrayOfChunks(amountOfChunks);
+	compressionHelper.populateChunks(bitmapHelper);
 
 	std::cout << "\nPress any key to close the console\n";
 	// Pauses the console until some key is pressed

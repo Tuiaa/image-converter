@@ -1,4 +1,6 @@
 #pragma once
+#include "BitmapHelper.h"
+#include "Bitmap.h"
 #include <vector>
 
 #define CHUNKSIZE = 4;
@@ -23,5 +25,5 @@ public:
 	void initializeArrayOfChunks(int amountOfChunks);
 	std::vector<PixelData> initializeArrayOfPixelData(int amountOfPixelDatas);
 
-	void populateChunks();
+	void populateChunks(BitmapHelper bitmapHelper);
 };
