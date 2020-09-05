@@ -31,14 +31,14 @@ int main()
 	BitmapHelper bitmapHelper = BitmapHelper();
 	bitmapHelper.createBitmap();
 
-	bitmapHelper.readBitmapImageFromFile("shapes.bmp", &width, &height, &bytesPerPixel);
+	bitmapHelper.readBitmapImageFromFile("bitmapTestImage.bmp", &width, &height, &bytesPerPixel);
 
 	bitmapHelper.saveBitmapValues(width, height, bytesPerPixel, bitmapHelper.data_pix);
 
 	bitmapHelper.data_pix_from_saved_bitmap = bitmapHelper.bitmap.pixelData;
 	bitmapHelper.data_pix = bitmapHelper.data_pix_from_saved_bitmap;
 
-	bitmapHelper.writeBitmap("img2_shapes.bmp", bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.bitmap.bytesPerPixel);
+	bitmapHelper.writeBitmap("img2.bmp", bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.bitmap.bytesPerPixel);
 
 	std::cout << "\nPress any key to close the console\n";
 	// Pauses the console until some key is pressed

@@ -5,16 +5,20 @@
  *	- Used to identify the file
  *	- It's size is 14 bytes
  */
-struct BITMAPFILEHEADER2
+struct BitmapFileHeaderStruct
 {
 	// First 2 bytes are the characters of bitmap file are "B" and "M" in ASCII
-	unsigned char fileTypeSignature[2] = { 'B', 'M' };
+	//unsigned char fileTypeSignature[2] = { 'B', 'M' };
+	const char *BM = "BM";
 	// Next is the size of the BMP in bytes (Bitmap file header 14 bytes + DIB header 40 bytes)
-	unsigned char sizeOfBitmapHeader = 14;
+	//unsigned char sizeOfBitmapHeader = 14;
+
+	// Filesize in bytes
+	int filesize;
 	// Next is reserved bytes, should be 0?
-	unsigned char reservedBytes = 0;
+	int reserved = 0x0000;
 	// Data offset, i.e. starting address of the byte where the bitmap image data (pixel array) can be found
-	unsigned char info[54];
+	int dataOffset;
 };
 
 /*
@@ -49,7 +53,7 @@ struct DIBHEADER2 {
 class Bitmap {
 public:
 	// Bitmap file header
-	BITMAPFILEHEADER2 bitmapFileHeader;
+	BitmapFileHeaderStruct bitmapFileHeader;
 	// DIB header?
 	DIBHEADER2 dibHeader;
 

@@ -2,18 +2,6 @@
 #include "BitmapHelper.h"
 #include <iostream>
 
-void BitmapHelper::createBitmap() {
-	bitmap = Bitmap();
-}
-
-void BitmapHelper::saveBitmapValues(int width, int height, int bytesPerPixel, unsigned char *pixelDataFromFile) {
-	bitmap.dibHeader.width = width;
-	bitmap.dibHeader.height = height;
-	bitmap.bytesPerPixel = bytesPerPixel;
-	bitmap.dibHeader.bitsPerPixel = bytesPerPixel * 8;
-	bitmap.pixelData = pixelDataFromFile;
-}
-
 #define DATA_OFFSET_OFFSET 0x000A
 #define WIDTH_OFFSET 0x0012
 #define HEIGHT_OFFSET 0x0016
@@ -24,7 +12,21 @@ void BitmapHelper::saveBitmapValues(int width, int height, int bytesPerPixel, un
 #define MAX_NUMBER_OF_COLORS 0
 #define ALL_COLORS_REQUIRED 0
 
+void BitmapHelper::createBitmap() {
+	bitmap = Bitmap();
+}
 
+void BitmapHelper::saveBitmapValues(int width, int height, int bytesPerPixel, unsigned char *pixelDataFromFile) {
+
+	bitmap.bitmapFileHeader.filesize = height + HEADER_SIZE + INFO_HEADER_SIZE;
+	bitmap.bitmapFileHeader.dataOffset = HEADER_SIZE + INFO_HEADER_SIZE;
+
+	bitmap.dibHeader.width = width;
+	bitmap.dibHeader.height = height;
+	bitmap.bytesPerPixel = bytesPerPixel;
+	bitmap.dibHeader.bitsPerPixel = bytesPerPixel * 8;
+	bitmap.pixelData = pixelDataFromFile;
+}
 
 void BitmapHelper::readBitmapImageFromFile(const char *fileName, int *width, int *height, int *bytesPerPixel)
 {
@@ -51,8 +53,6 @@ void BitmapHelper::readBitmapImageFromFile(const char *fileName, int *width, int
 
 	int rowSize = (*width)*(*bytesPerPixel);
 	totalSize = rowSize * (*height);
-	//*pixels = (byte*)malloc(totalSize);
-	//*pixels = new unsigned char[size];
 
 	int dataOffset;
 	fseek(imageFile, DATA_OFFSET_OFFSET, SEEK_SET);	// Seek from beginning of the file (SEEK_SET)
@@ -83,27 +83,18 @@ void BitmapHelper::writeBitmap(const char *fileName, int width, int height, int 
 	FILE *outputFile = fopen(fileName, "wb");
 
 	//*****HEADER************//
-	const char *BM = "BM";
-
-	//Bitmap bitmap = Bitmap();
-
-	fwrite(&BM[0], 1, 1, outputFile);
-	fwrite(&BM[1], 1, 1, outputFile);
-
-	int paddedRowSize = (int)(4 * ceil((float)width / 4.0f))*bytesPerPixel;
-	int fileSize = paddedRowSize * height + HEADER_SIZE + INFO_HEADER_SIZE;
+	//signature
+	fwrite(&bitmap.bitmapFileHeader.BM[0], 1, 1, outputFile);
+	fwrite(&bitmap.bitmapFileHeader.BM[1], 1, 1, outputFile);
 
 	//filesize
-	//int fileSize = (height * (width *(24 / 8)));
-	fwrite(&fileSize, 4, 1, outputFile);
+	fwrite(&bitmap.bitmapFileHeader.filesize, 4, 1, outputFile);
 
 	//reserved
-	int reserved = 0x0000;
-	fwrite(&reserved, 4, 1, outputFile);
+	fwrite(&bitmap.bitmapFileHeader.filesize, 4, 1, outputFile);
 
-	//dataoffset
-	int dataOffset = HEADER_SIZE + INFO_HEADER_SIZE;
-	fwrite(&dataOffset, 4, 1, outputFile);
+	// Data offset
+	fwrite(&bitmap.bitmapFileHeader.dataOffset, 4, 1, outputFile);
 
 	//*******INFO*HEADER******//
 	int infoHeaderSize = INFO_HEADER_SIZE;
