@@ -29,6 +29,7 @@ private:
 	int totalAmountOfChunksVertically;			// how many chunks there are vertically in total
 	int amountOfPixelsInARowOfChunks;			// how many pixels in total there are in a row of 4x4 chunks
 	int lengthOfOneRowInPixels;					// this is the same as the width of an image
+	int pixelsInOneChunk;						// how many pixels in total are in one chunk (4x4 = 16)
 
 	/*	General helper values	*/
 	int currentPixelData = 0;
@@ -39,19 +40,19 @@ private:
 	int currentRow = 0;
 	int whatcurrentChunkShouldBe;
 
+	std::vector<PixelChunk> allChunksFromAnImage;
+
 	int calculateHowManyChunksAreNeeded(int width, int height);
+	void initializeVectorOfChunks();
+	std::vector<PixelData> initializeArrayOfPixelData();
+
+
 
 public:
 
 	void initialiseSettingsForCompression(int arrayWidth, int arrayHeight);
 
 	unsigned char* testSmallerDataPix;
-	std::vector<PixelChunk> chunks;
-
-
-
-	void initializeArrayOfChunks();
-	std::vector<PixelData> initializeArrayOfPixelData(int amountOfPixelDatas);
 
 	void createTestDataSet();
 

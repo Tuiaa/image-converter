@@ -50,7 +50,6 @@ int main()
 	// So test values can be used
 
 	compressionHelper.initialiseSettingsForCompression(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height);
-	compressionHelper.initializeArrayOfChunks();
 	compressionHelper.addChunksUsingRealValues(bitmapHelper.data_pix);
 
 	std::cout << "\nPress any key to close the console\n";

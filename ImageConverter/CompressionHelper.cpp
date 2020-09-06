@@ -11,13 +11,16 @@
  */
 void CompressionHelper::initialiseSettingsForCompression(int widthOfUsedImage, int heightOfUsedImage) {
 	chunkSize = 4;
-	totalAmountOfChunks = calculateHowManyChunksAreNeeded(widthOfUsedImage, heightOfUsedImage);
 
+	totalAmountOfChunks = calculateHowManyChunksAreNeeded(widthOfUsedImage, heightOfUsedImage);
 	totalAmountOfChunksHorizontally = widthOfUsedImage / chunkSize;
 	totalAmountOfChunksVertically = heightOfUsedImage / chunkSize;
 
 	amountOfPixelsInARowOfChunks = widthOfUsedImage * chunkSize;
 	lengthOfOneRowInPixels = widthOfUsedImage;
+	pixelsInOneChunk = chunkSize * chunkSize;
+
+	initializeVectorOfChunks();
 }
 
 /*
@@ -37,33 +40,37 @@ int CompressionHelper::calculateHowManyChunksAreNeeded(int width, int height) {
 	return amountOfChunks;
 }
 
+/*
+ *		Initialize Vector Of Chunks
+ *		- initializes correct amount of chunks
+ *		(side note: I'm not sure if this should be done or not, should I just create them when reading the data from bitmap?
+ *		 Do I even need to initialise them befrehand at all?)
+ */
+void CompressionHelper::initializeVectorOfChunks() {
 
-void CompressionHelper::initializeArrayOfChunks() {
-	std::vector<PixelChunk> createdChunks;
 	for (int i = 0; i < totalAmountOfChunks; i++) {
-		//std::vector<PixelData> chunk = initializeArrayOfPixelData(16);
-		std::vector<PixelData> chunk = initializeArrayOfPixelData(16);
+		std::vector<PixelData> chunk = initializeArrayOfPixelData();
 		PixelChunk tempPixelChunk;
 		tempPixelChunk.pixelData = chunk;
 
-		createdChunks.push_back(tempPixelChunk);
-		//std::cout << "\nchunk created with pixeldata ";
+		allChunksFromAnImage.push_back(tempPixelChunk);
 	}
-
-	chunks = createdChunks;
-	std::cout << "\nchunks done";
 }
 
-std::vector<PixelData> CompressionHelper::initializeArrayOfPixelData(int amountOfPixelDatas) {
+/*
+ *		Initialize Vector Of PixelData
+ *		- initializes the pixel data (basically color value) stored inside a chunk
+ */
+std::vector<PixelData> CompressionHelper::initializeArrayOfPixelData() {
+
 	std::vector<PixelData> pixelData;
-	for (int i = 0; i < amountOfPixelDatas; i++) {
+	for (int i = 0; i < pixelsInOneChunk; i++) {
 		PixelData tempPixelData;
 		tempPixelData.x = 0;
 		tempPixelData.y = 0;
 		tempPixelData.colorValue = 0;
 
 		pixelData.push_back(tempPixelData);
-		//std::cout << "\npixeldata created ";
 	}
 
 	return pixelData;
@@ -120,7 +127,7 @@ void CompressionHelper::addFirstRow() {
 
 			// add to current chunk
 			//chunks[currentChunk].pixelData[currentPixelData].colorValue = oneRow[currentPixelFromThisRow];
-			chunks[currentChunk].pixelData[currentPixelData].colorValue = 5;
+			allChunksFromAnImage[currentChunk].pixelData[currentPixelData].colorValue = 5;
 			currentPixelFromArray++;
 			currentPixelData++;
 		}
@@ -193,7 +200,7 @@ void CompressionHelper::addNextRows() {
 
 				// add to current chunk
 				//chunks[currentChunk].pixelData[currentPixelData].colorValue = oneRow[currentPixelFromThisRow];
-				chunks[currentChunk].pixelData[currentPixelData].colorValue = 5;
+				allChunksFromAnImage[currentChunk].pixelData[currentPixelData].colorValue = 5;
 
 				currentPixelFromArray++;
 				currentPixelData++;
