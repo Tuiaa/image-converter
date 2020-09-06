@@ -17,7 +17,7 @@ struct PixelChunk {
 
 class CompressionHelper {
 public:
-	
+	unsigned char* testSmallerDataPix;
 	std::vector<PixelChunk> chunks;
 
 	int calculateHowManyChunksAreNeeded(int width, int height);
@@ -26,4 +26,5 @@ public:
 	std::vector<PixelData> initializeArrayOfPixelData(int amountOfPixelDatas);
 
 	void populateChunks(BitmapHelper bitmapHelper);
+	void addFirstChunks();
 };
