@@ -6,13 +6,13 @@
 
 int CompressionHelper::calculateHowManyChunksAreNeeded(int width, int height) {
 
-	// switch back!
 	//int horizontalChunks = width / 4;
 	int horizontalChunks = width / 2;
 	//int verticalChunks = height / 4;
 	int verticalChunks = height / 2;
 
 	int amountOfChunks = horizontalChunks * verticalChunks;
+	totalAmountOfChunks = amountOfChunks;
 
 	std::cout << "\namount of chunks: " << amountOfChunks;
 	return amountOfChunks;
@@ -82,42 +82,47 @@ void CompressionHelper::populateChunks(BitmapHelper bitmapHelper) {
 }
 
 void CompressionHelper::addFirstChunks() {
-	// otetaan ekojen chunkkien määrä arraysta (testi arraysta 12 ekaa numeroa) --> arraywidth * chunksize
-	int amountOfFirstValues = 6 * 2;	//array width * chunksize
-	std::vector<int> firstValues;
-	int howManyRowsInTotal = 12 / 6;	// amountOfFirstValues / arrayWidth
+	
+	addFirstRow();
+	currentChunk = 0;
+	addNextRows();
 
-	int currentPixelData = 0;
-	int currentPixelFromArray = 0;
+	currentChunk = amountOfChunksFromWidth;
+	currentPixelData = 0;
+	currentRowFromChunk = 0;
 
-	int amountOfChunks = 6 / 2;		// width / chunksize
+	addFirstRow();
+	currentChunk = amountOfChunksFromWidth;
+	addNextRows();
 
-	int currentRow = 0;
-	int currentChunk = 0;
+	std::cout << "\nAll chunks populated";
 
-	int chunkSize = 2;	//should be 4
+}
 
+void CompressionHelper::addFirstRow() {
+
+	// amount of first values means how many items there are in the first row of chunks
 	for (int i = 0; i < amountOfFirstValues; i++) {
 		firstValues.push_back(testSmallerDataPix[i]);
 		std::cout << "\nvalue added to first values: " << (int)testSmallerDataPix[i];
 	}
 
-	int rowLength = 6;	// arraywidth
-	std::vector<int> oneRow;
-
+	// take first row of that chunk
 	for (int j = 0; j < rowLength; j++) {
 		oneRow.push_back(firstValues[j]);
 		std::cout << "\nvalue added to one row: " << (int)firstValues[j];
 	}
 
+	currentPixelFromThisRow = 0;
 	std::cout << "\nadding first row values to chunks";
 	// go through saved row and add the values to chunks
-	for (int x = 0; x < amountOfChunks; x++) {
+	for (int x = 0; x < amountOfChunksFromWidth; x++) {
 		std::cout << "\ninside for x < rowlength, current pixel from array: " << currentPixelFromArray;
 		for (int y = 0; y < chunkSize; y++) {
-			std::cout << "\ninside for y < chunkSize";
+			std::cout << "\ninside for y < chunkSize, currentChunk = " << currentChunk;
+			std::cout << "\ncurrentPixelData = " << currentPixelData;
 			// add to current chunk
-			chunks[currentChunk].pixelData[currentPixelData].colorValue = oneRow[currentPixelFromArray];
+			chunks[currentChunk].pixelData[currentPixelData].colorValue = oneRow[currentPixelFromThisRow];
 			currentPixelFromArray++;
 			currentPixelData++;
 		}
@@ -126,15 +131,18 @@ void CompressionHelper::addFirstChunks() {
 	}
 	std::cout << "first row values added to chunks";
 
-	// add next row
-	currentRow++;
-	currentChunk = 0;
+}
+
+void CompressionHelper::addNextRows() {
+
+	// add next rows
+	currentRowFromChunk++;
 	std::vector<int> nextRow;
 
-	int nextRowLastItem = (currentRow + 1) * rowLength;
+	int nextRowLastItem = (currentRowFromChunk + 1) * rowLength;
 
 	// calculate the next row starting point
-	int startingNumber = currentRow * rowLength;
+	int startingNumber = currentRowFromChunk * rowLength;
 	for (int a = startingNumber; a < nextRowLastItem; a++) {
 		nextRow.push_back(firstValues[a]);
 		std::cout << "\nvalue added to next row: " << (int)firstValues[a];
@@ -142,25 +150,25 @@ void CompressionHelper::addFirstChunks() {
 	oneRow.clear();
 	oneRow = nextRow;
 
-	if (currentRow == 1) {
-		if(chunkSize == 2) currentPixelData = 2;
+	if (currentRowFromChunk == 1) {
+		if (chunkSize == 2) currentPixelData = 2;
 		if (chunkSize == 4) currentPixelData = 4;
 	}
-	else if (currentRow == 2) {
+	else if (currentRowFromChunk == 2) {
 		//if (chunkSize == 2) currentPixelData = 2;
 		if (chunkSize == 4) currentPixelData = 8;
 	}
-	else if (currentRow == 3) {
+	else if (currentRowFromChunk == 3) {
 		//if (chunkSize == 2) currentPixelData = 2;
 		if (chunkSize == 4) currentPixelData = 12;
 	}
 
 	int currentPixelDataOnThisRow = currentPixelData;
-	int currentPixelFromThisRow = 0;
 
+	currentPixelFromThisRow = 0;
 	std::cout << "\nadding next row values to chunks";
 	// go through saved row and add the values to chunks
-	for (int x = 0; x < amountOfChunks; x++) {
+	for (int x = 0; x < amountOfChunksFromWidth; x++) {
 		std::cout << "\ninside for x < rowlength, current pixel from array: " << currentPixelFromArray;
 		for (int y = 0; y < chunkSize; y++) {
 			std::cout << "\ninside for y < chunkSize";
@@ -172,7 +180,7 @@ void CompressionHelper::addFirstChunks() {
 		currentChunk++;
 		currentPixelData = currentPixelDataOnThisRow;
 	}
-	std::cout << "next row values added to chunks";
+	std::cout << "\nnext row values added to chunks, currentPixelFromArray = " << currentPixelFromArray;
 
 	std::cout << "\nOut of for loop";
 }

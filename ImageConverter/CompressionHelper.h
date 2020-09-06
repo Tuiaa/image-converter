@@ -27,4 +27,29 @@ public:
 
 	void populateChunks(BitmapHelper bitmapHelper);
 	void addFirstChunks();
+	void addFirstRow();
+	void addNextRows();
+
+
+
+	int chunkSize = 2;	//should be 4
+	// otetaan ekojen chunkkien määrä arraysta (testi arraysta 12 ekaa numeroa) --> arraywidth * chunksize
+	int amountOfFirstValues = 6 * 2;	//array width * chunksize
+	std::vector<int> firstValues;
+	int howManyRowsInTotal = 12 / 6;	// amountOfFirstValues / arrayWidth
+
+	int currentPixelData = 0;
+	int currentPixelFromArray = 0;
+	int currentPixelFromThisRow = 0;
+
+	int totalAmountOfChunks;
+	int amountOfChunksFromWidth = 6 / 2;		// width / chunksize
+
+	int currentRowFromChunk = 0;
+	int currentChunk = 0;
+
+
+
+	int rowLength = 6;	// arraywidth
+	std::vector<int> oneRow;
 };
