@@ -44,6 +44,9 @@ int main()
 
 	//int amountOfChunks = compressionHelper.calculateHowManyChunksAreNeeded(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height);
 	int amountOfChunks = compressionHelper.calculateHowManyChunksAreNeeded(6, 4);
+
+	// So test values can be used
+	compressionHelper.setTheSettingsToBeUsed(2, 6, 4);
 	compressionHelper.initializeArrayOfChunks(amountOfChunks);
 	compressionHelper.populateChunks(bitmapHelper);
 

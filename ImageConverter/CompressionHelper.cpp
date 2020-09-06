@@ -73,12 +73,23 @@ void CompressionHelper::populateChunks(BitmapHelper bitmapHelper) {
 		//std::cout << "\nvalue in smaller data pix: " << (int)testSmallerDataPix[y];
 	}
 
-	// first row
 	addChunksUsingRealValues();
 
 	std::cout << "\nout of for loop ";
 	// print values for test
 
+}
+
+void CompressionHelper::setTheSettingsToBeUsed(int givenChunkSize, int givenArrayWidth, int givenArrayHeight) {
+	chunkSize = givenChunkSize;	//should be 4
+	// otetaan ekojen chunkkien määrä arraysta (testi arraysta 12 ekaa numeroa) --> arraywidth * chunksize
+	amountOfFirstValues = givenArrayWidth * chunkSize;	//array width * chunksize
+	howManyRowsInTotal = amountOfFirstValues / givenArrayWidth;	// amountOfFirstValues / arrayWidth
+
+	amountOfChunksFromWidth = givenArrayWidth / chunkSize;		// width / chunksize
+	amountOfChunksFromHeight = givenArrayHeight / chunkSize;		// height / chunksize
+
+	rowLength = givenArrayWidth;	// arraywidth
 }
 
 void CompressionHelper::addChunksUsingRealValues() {
@@ -95,18 +106,6 @@ void CompressionHelper::addChunksUsingRealValues() {
 		currentPixelData = 0;
 		currentRowFromChunk = 0;
 	}
-
-	/*addFirstRow();
-	currentChunk = 0;
-	addNextRows();
-
-	currentChunk = amountOfChunksFromWidth;
-	currentPixelData = 0;
-	currentRowFromChunk = 0;
-
-	addFirstRow();
-	currentChunk = amountOfChunksFromWidth;
-	addNextRows();*/
 
 	std::cout << "\nAll chunks populated";
 
