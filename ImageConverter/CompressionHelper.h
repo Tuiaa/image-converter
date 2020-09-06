@@ -40,26 +40,20 @@ private:
 	int currentRow = 0;
 	int whatcurrentChunkShouldBe;
 
-	std::vector<PixelChunk> allChunksFromAnImage;
+	std::vector<PixelChunk> allChunksFromImage;
+	unsigned char* allPixelsFromImage;
 
 	int calculateHowManyChunksAreNeeded(int width, int height);
 	void initializeVectorOfChunks();
 	std::vector<PixelData> initializeArrayOfPixelData();
 
-
-
-public:
-
-	void initialiseSettingsForCompression(int arrayWidth, int arrayHeight);
-
-	unsigned char* testSmallerDataPix;
-
-	void createTestDataSet();
-
-	void addChunksUsingRealValues(unsigned char* datapixelarray);
-	void addFirstRow();
+	void addFirstRowOfNewChunk();
+	void calculateAllPixelsNeededForRowOfChunks();
+	void calculateAllPixelsNeededForOneRowOfChunk();
 	void addNextRows();
 
-	unsigned char* pixelDataCharArray;
+public:
+	void initialiseSettingsForCompression(int imageWidth, int imageHeight, unsigned char* pixelsFromImage);
 
+	void startCompression();
 };

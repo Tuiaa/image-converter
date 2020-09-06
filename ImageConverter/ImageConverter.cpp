@@ -49,8 +49,8 @@ int main()
 	//compressionHelper.createTestDataSet();
 	// So test values can be used
 
-	compressionHelper.initialiseSettingsForCompression(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height);
-	compressionHelper.addChunksUsingRealValues(bitmapHelper.data_pix);
+	compressionHelper.initialiseSettingsForCompression(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.data_pix);
+	compressionHelper.startCompression();
 
 	std::cout << "\nPress any key to close the console\n";
 	// Pauses the console until some key is pressed
