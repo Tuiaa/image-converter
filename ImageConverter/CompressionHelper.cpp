@@ -51,9 +51,10 @@ int CompressionHelper::calculateHowManyChunksAreNeeded(int width, int height) {
 void CompressionHelper::initializeVectorOfChunks() {
 
 	for (int i = 0; i < totalAmountOfChunks; i++) {
-		std::vector<PixelData> chunk = initializeArrayOfPixelData();
+		std::vector<int> chunkOfPixels = initializeArrayOfPixelColorValues();
+
 		PixelChunk tempPixelChunk;
-		tempPixelChunk.pixelData = chunk;
+		tempPixelChunk.colorValueOfPixel = chunkOfPixels;
 
 		allChunksFromImage.push_back(tempPixelChunk);
 	}
@@ -63,19 +64,14 @@ void CompressionHelper::initializeVectorOfChunks() {
  *		Initialize Vector Of PixelData
  *		- initializes the pixel data (basically color value) stored inside a chunk
  */
-std::vector<PixelData> CompressionHelper::initializeArrayOfPixelData() {
+std::vector<int> CompressionHelper::initializeArrayOfPixelColorValues() {
 
-	std::vector<PixelData> pixelData;
+	std::vector<int> colorValuesOfPixel;
 	for (int i = 0; i < pixelsInOneChunk; i++) {
-		PixelData tempPixelData;
-		tempPixelData.x = 0;
-		tempPixelData.y = 0;
-		tempPixelData.colorValue = 0;
-
-		pixelData.push_back(tempPixelData);
+		colorValuesOfPixel.push_back(0);
 	}
 
-	return pixelData;
+	return colorValuesOfPixel;
 }
 
 void CompressionHelper::startCompression() {
@@ -131,7 +127,7 @@ void CompressionHelper::addFirstRowOfNewChunk() {
 
 			// add to current chunk
 			//chunks[currentChunk].pixelData[currentPixelData].colorValue = oneRow[currentPixelFromThisRow];
-			allChunksFromImage[currentChunk].pixelData[currentPixelData].colorValue = 5;
+			allChunksFromImage[currentChunk].colorValueOfPixel[currentPixelData] = 5;
 			currentPixelFromArray++;
 			currentPixelData++;
 		}
@@ -204,7 +200,7 @@ void CompressionHelper::addNextRows() {
 
 				// add to current chunk
 				//chunks[currentChunk].pixelData[currentPixelData].colorValue = oneRow[currentPixelFromThisRow];
-				allChunksFromImage[currentChunk].pixelData[currentPixelData].colorValue = 5;
+				allChunksFromImage[currentChunk].colorValueOfPixel[currentPixelData] = 5;
 
 				currentPixelFromArray++;
 				currentPixelData++;

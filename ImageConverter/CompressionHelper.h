@@ -3,16 +3,8 @@
 #include "Bitmap.h"
 #include <vector>
 
-#define CHUNKSIZE = 4;
-
-struct PixelData {
-	int x;
-	int y;
-	unsigned char colorValue;
-};
-
 struct PixelChunk {
-	std::vector<PixelData> pixelData;
+	std::vector<int> colorValueOfPixel;
 };
 
 class CompressionHelper {
@@ -45,7 +37,7 @@ private:
 
 	int calculateHowManyChunksAreNeeded(int width, int height);
 	void initializeVectorOfChunks();
-	std::vector<PixelData> initializeArrayOfPixelData();
+	std::vector<int> initializeArrayOfPixelColorValues();
 
 	void addFirstRowOfNewChunk();
 	void calculateAllPixelsNeededForRowOfChunks();
