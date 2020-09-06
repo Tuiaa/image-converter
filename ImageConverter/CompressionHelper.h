@@ -25,7 +25,7 @@ public:
 	void initializeArrayOfChunks(int amountOfChunks);
 	std::vector<PixelData> initializeArrayOfPixelData(int amountOfPixelDatas);
 
-	void populateChunks(BitmapHelper bitmapHelper);
+	void createTestDataSet();
 	void setTheSettingsToBeUsed(int chunkSize, int arrayWidth, int arrayHeight);
 	void addChunksUsingRealValues();
 	void addFirstRow();
@@ -54,4 +54,6 @@ public:
 	   
 	int rowLength = 6;	// arraywidth
 	std::vector<int> oneRow;
+
+	int whatcurrentChunkShouldBe;
 };

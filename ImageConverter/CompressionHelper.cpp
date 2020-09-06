@@ -49,19 +49,7 @@ std::vector<PixelData> CompressionHelper::initializeArrayOfPixelData(int amountO
 	return pixelData;
 }
 
-void CompressionHelper::populateChunks(BitmapHelper bitmapHelper) {
-	int currentRow = 0;
-	int currentColumn = 0;
-
-	int currentChunk = 0;
-	int currentPixelData = 0;
-
-	int currentPixelInARow = 0;
-	//int howManySlices = bitmapHelper.bitmap.dibHeader.width / 4;	// switch back to 4
-	int howManySlices = 2;	// switch back to smthing
-	int currentChunkEndPoint = howManySlices;
-
-	//int arrayWidth = bitmapHelper.bitmap.dibHeader.width - 1;
+void CompressionHelper::createTestDataSet() {
 	int arrayWidth = 6;
 	int arrayHeight = 4;
 
@@ -72,12 +60,6 @@ void CompressionHelper::populateChunks(BitmapHelper bitmapHelper) {
 	for (int y = 0; y < 24; y++) {
 		//std::cout << "\nvalue in smaller data pix: " << (int)testSmallerDataPix[y];
 	}
-
-	addChunksUsingRealValues();
-
-	std::cout << "\nout of for loop ";
-	// print values for test
-
 }
 
 void CompressionHelper::setTheSettingsToBeUsed(int givenChunkSize, int givenArrayWidth, int givenArrayHeight) {
@@ -94,17 +76,11 @@ void CompressionHelper::setTheSettingsToBeUsed(int givenChunkSize, int givenArra
 
 void CompressionHelper::addChunksUsingRealValues() {
 
-
-	int whatcurrentChunkShouldBe = currentRow * amountOfChunksFromWidth;
+	whatcurrentChunkShouldBe = currentRow * amountOfChunksFromWidth;
 	for (int i = 0; i < amountOfChunksFromHeight; i++) {
 		addFirstRow();
-		currentChunk = whatcurrentChunkShouldBe;
-		addNextRows();
 
-		whatcurrentChunkShouldBe = (currentRow - 1) * amountOfChunksFromWidth;
-		currentChunk = whatcurrentChunkShouldBe;
-		currentPixelData = 0;
-		currentRowFromChunk = 0;
+		//std::cout << "\namount of chucks from height: " << amountOfChunksFromHeight;
 	}
 
 	std::cout << "\nAll chunks populated";
@@ -143,21 +119,29 @@ void CompressionHelper::addFirstRow() {
 	}
 
 	currentRow++;
-	std::cout << "first row values added to chunks";
+	std::cout << "\nfirst row values added to chunks";
 
+	currentChunk = whatcurrentChunkShouldBe;
+	addNextRows();
 }
 
 void CompressionHelper::addNextRows() {
 
-	int howManyRepeats = 0;
+	std::cout << "\nADDING NEXT ROWS STARING";
+
+	int howManyRepeats = 1;
+
+	// WHY ISN'T THIS TRIGGERING????
 	if (chunkSize == 4) {
 		howManyRepeats = 3;
 	}
 	else if (chunkSize == 2) {
-		howManyRepeats == 2;
+		howManyRepeats == 1;
 	}
 
-	for (int repeats = 0; repeats < howManyRepeats; repeats++) {
+	for (int b = 0; b < howManyRepeats; b++) {
+
+		std::cout << "\nINSIDE REPEATS";
 		// add next rows
 		currentRowFromChunk++;
 		std::vector<int> nextRow;
@@ -209,5 +193,10 @@ void CompressionHelper::addNextRows() {
 		currentRow++;
 	}
 
-	std::cout << "\nOut of for loop";
+	whatcurrentChunkShouldBe = (currentRow - 1) * amountOfChunksFromWidth;
+	currentChunk = whatcurrentChunkShouldBe;
+	currentPixelData = 0;
+	currentRowFromChunk = 0;
+
+	//std::cout << "\nOut of for loop";
 }

@@ -45,10 +45,12 @@ int main()
 	//int amountOfChunks = compressionHelper.calculateHowManyChunksAreNeeded(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height);
 	int amountOfChunks = compressionHelper.calculateHowManyChunksAreNeeded(6, 4);
 
+	// Only works with width = 6 and height = 4
+	compressionHelper.createTestDataSet();
 	// So test values can be used
 	compressionHelper.setTheSettingsToBeUsed(2, 6, 4);
 	compressionHelper.initializeArrayOfChunks(amountOfChunks);
-	compressionHelper.populateChunks(bitmapHelper);
+	compressionHelper.addChunksUsingRealValues();
 
 	std::cout << "\nPress any key to close the console\n";
 	// Pauses the console until some key is pressed
