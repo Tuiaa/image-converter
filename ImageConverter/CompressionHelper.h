@@ -12,7 +12,7 @@ private:
 	// Vector to save the pixels needed to populate one row of chunks (one chunk is 4x4 pixels)
 	std::vector<int> pixelsNeededForOneRowOfChunks;
 	// Vector to save pixels of one row of an image (so it basically has pixels the same number that's image's width)
-	std::vector<int> pixelsOfOneRowOfAnImage;
+	std::vector<int> pixelsOfOneRowOfImage;
 
 	/*	These values are set in initialiseSettingsForCompression method	*/
 	int chunkSize;								// chunkSize is 4 because BC1 should use 4x4 blocks of texels
@@ -24,7 +24,7 @@ private:
 	int pixelsInOneChunk;						// how many pixels in total are in one chunk (4x4 = 16)
 
 	/*	General helper values	*/
-	int currentPixelData = 0;
+	int currentPixelFromChunk = 0;
 	int currentPixelFromArray = 0;
 	int currentPixelFromThisRow = 0;
 	int currentRowFromChunk = 0;

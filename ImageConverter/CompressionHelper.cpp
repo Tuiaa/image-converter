@@ -31,12 +31,8 @@ void CompressionHelper::initialiseSettingsForCompression(int widthOfUsedImage, i
  */
 int CompressionHelper::calculateHowManyChunksAreNeeded(int width, int height) {
 
-	// CRITICAL ERROR
-	// also add to use chunksize
-	//int horizontalChunks = width / 4;
-	int horizontalChunks = width / 2;
-	//int verticalChunks = height / 4;
-	int verticalChunks = height / 2;
+	int horizontalChunks = width / 4;
+	int verticalChunks = height / 4;
 
 	int amountOfChunks = horizontalChunks * verticalChunks;
 	return amountOfChunks;
@@ -76,10 +72,17 @@ std::vector<int> CompressionHelper::initializeArrayOfPixelColorValues() {
 
 void CompressionHelper::startCompression() {
 
+	int amountOfChunksPopulated = 0;
 	// Calculate current chunk using the value of current row and total amount of horizontal chunks
 	whatcurrentChunkShouldBe = currentRow * totalAmountOfChunksHorizontally;
 	for (int i = 0; i < totalAmountOfChunksVertically; i++) {
-		addFirstRowOfNewChunk();
+		//addFirstRowOfNewChunk();
+		addNextRows();
+		amountOfChunksPopulated++;
+		//std::cout << "\nAmount of chunks populated: " << amountOfChunksPopulated;
+		if (amountOfChunksPopulated == 6) {
+			//std::cout << "\nbreak";
+		}
 	}
 
 	std::cout << "\nAll chunks populated";
@@ -95,7 +98,7 @@ void CompressionHelper::calculateAllPixelsNeededForRowOfChunks() {
 	
 	for (int i = 0; i < amountOfPixelsInARowOfChunks; i++) {
 		pixelsNeededForOneRowOfChunks.push_back(allPixelsFromImage[i]);
-		//std::cout << "\nvalue added to first values: " << (int)bitmapHelper.data_pix[i];
+									//std::cout << "\nvalue added to first values: " << (int)bitmapHelper.data_pix[i];
 	}
 }
 
@@ -107,36 +110,38 @@ void CompressionHelper::calculateAllPixelsNeededForRowOfChunks() {
 void CompressionHelper::calculateAllPixelsNeededForOneRowOfChunk() {
 	// take first row of that chunk
 	for (int j = 0; j < lengthOfOneRowInPixels; j++) {
-		pixelsOfOneRowOfAnImage.push_back(pixelsNeededForOneRowOfChunks[j]);
-		//std::cout << "\nvalue added to one row: " << (int)firstValues[j];
+		pixelsOfOneRowOfImage.push_back(pixelsNeededForOneRowOfChunks[j]);
+											//std::cout << "\nvalue added to one row: " << (int)firstValues[j];
 	}
 }
 
 void CompressionHelper::addFirstRowOfNewChunk() {
 	calculateAllPixelsNeededForRowOfChunks();
 	calculateAllPixelsNeededForOneRowOfChunk();
-	
-	currentPixelFromThisRow = 0;
 
+	currentPixelFromChunk = 0;
 	// Go through the saved row of pixels
 	for (int chunk = 0; chunk < totalAmountOfChunksHorizontally; chunk++) {
-		//std::cout << "\ninside for x < rowlength, current pixel from array: " << currentPixelFromArray;
+										//std::cout << "\ninside for x < rowlength, current pixel from array: " << currentPixelFromArray;
 		for (int pixelNeededForChunk = 0; pixelNeededForChunk < chunkSize; pixelNeededForChunk++) {
-			//std::cout << "\ninside for y < chunkSize, currentChunk = " << currentChunk;
-			//std::cout << "\ncurrentPixelData = " << currentPixelData;
+											//std::cout << "\ninside for y < chunkSize, currentChunk = " << currentChunk;
+											//std::cout << "\ncurrentPixelData = " << currentPixelData;
 
-			// add to current chunk
-			//chunks[currentChunk].pixelData[currentPixelData].colorValue = oneRow[currentPixelFromThisRow];
-			allChunksFromImage[currentChunk].colorValueOfPixel[currentPixelData] = 5;
+			// add to chunk that's currently being populated, currentPixelData tells which of the pixels inside of a chunk is being populated
+											//chunks[currentChunk].pixelData[currentPixelData].colorValue = oneRow[currentPixelFromThisRow];
+			allChunksFromImage[currentChunk].colorValueOfPixel[currentPixelFromChunk] = 5;
 			currentPixelFromArray++;
-			currentPixelData++;
+			currentPixelFromChunk++;
 		}
+
+		// One chunk gone through, jump to next one
 		currentChunk++;
-		currentPixelData = 0;
+		// Jumping to next chunk so resetting the position of currenly being filled pixel
+		currentPixelFromChunk = 0;
 	}
 
+	// One row added so adding more to the current row calculation
 	currentRow++;
-	//std::cout << "\nfirst row values added to chunks";
 
 	currentChunk = whatcurrentChunkShouldBe;
 	addNextRows();
@@ -144,78 +149,99 @@ void CompressionHelper::addFirstRowOfNewChunk() {
 
 void CompressionHelper::addNextRows() {
 
-	//std::cout << "\nADDING NEXT ROWS STARING";
+	calculateAllPixelsNeededForRowOfChunks();
+	calculateAllPixelsNeededForOneRowOfChunk();
 
-	int howManyRepeats = 3;
+	// there's 4 rows in one chunk so 3 more rows needed
+	int howManyRepeats = 4;
+	currentRowFromChunk = 0;
 
-	// WHY ISN'T THIS TRIGGERING????
-	if (chunkSize == 4) {
-		howManyRepeats = 3;
-	}
-	else if (chunkSize == 2) {
-		howManyRepeats == 1;
-	}
-
+	//std::cout << "\ngoing into repeats";
 	for (int b = 0; b < howManyRepeats; b++) {
-
-		//std::cout << "\nINSIDE REPEATS";
-		// add next rows
-		currentRowFromChunk++;
-		std::vector<int> nextRow;
-
-		int nextRowLastItem = (currentRowFromChunk + 1) * lengthOfOneRowInPixels;
+		//std::cout << "\n\nIN THE START OF HOW MANY REPEATS SO START OF ADDING NEW ROW\n\n";
+		//currentRowFromChunk++;		// new row from chunk
+		std::vector<int> tempPixelsOfThisRowOfImage;
 
 		// calculate the next row starting point
-		int startingNumber = currentRowFromChunk * lengthOfOneRowInPixels;
-		for (int a = startingNumber; a < nextRowLastItem; a++) {
-			nextRow.push_back(pixelsNeededForOneRowOfChunks[a]);
-			//std::cout << "\nvalue added to next row: " << (int)firstValues[a];
-		}
-		pixelsOfOneRowOfAnImage.clear();
-		pixelsOfOneRowOfAnImage = nextRow;
+		//int nextRowStartingPosition = currentRowFromChunk * lengthOfOneRowInPixels;		// first row = 0, second: 400 etc
 
-		if (currentRowFromChunk == 1) {
-			if (chunkSize == 2) currentPixelData = 2;
-			if (chunkSize == 4) currentPixelData = 4;
+		int currentRowStartingPixelPosition = currentRowFromChunk * lengthOfOneRowInPixels;		// first row = 0*400 = 0, second = 1*400 = 400
+		//std::cout << "\ncurrent row starting pixel position: " << currentRowStartingPixelPosition;
+
+		int thisRowLastPixel = (currentRowFromChunk + 1) * lengthOfOneRowInPixels;		// with image of width 400, first row: 0+1 * 400 = 400, second: 1+1 * 800 etc
+		//std::cout << "\nthis row last pixel: " << thisRowLastPixel;
+		//std::cout << "\ngoing to fetch pixels of this row";
+		// Get next saved row of pixels from pixelsNeededForOneRowOfChunks
+		for (int a = currentRowStartingPixelPosition; a < thisRowLastPixel; a++) {
+			tempPixelsOfThisRowOfImage.push_back(pixelsNeededForOneRowOfChunks[a]);
+									//std::cout << "\nvalue added to next row: " << (int)firstValues[a];
+		}
+
+		//std::cout << "\npixels of this row fetched";
+		// Add calculated pixels to the row vector
+		pixelsOfOneRowOfImage.clear();
+		pixelsOfOneRowOfImage = tempPixelsOfThisRowOfImage;
+
+		// Hardcoded values because no time to refactor
+		if (currentRowFromChunk == 0) {
+			currentPixelFromChunk = 0;
+		}
+		else if (currentRowFromChunk == 1) {
+			currentPixelFromChunk = 4;
 		}
 		else if (currentRowFromChunk == 2) {
-			//if (chunkSize == 2) currentPixelData = 2;
-			if (chunkSize == 4) currentPixelData = 8;
+			currentPixelFromChunk = 8;
 		}
 		else if (currentRowFromChunk == 3) {
-			//if (chunkSize == 2) currentPixelData = 2;
-			if (chunkSize == 4) currentPixelData = 12;
+			currentPixelFromChunk = 12;
 		}
 
-		int currentPixelDataOnThisRow = currentPixelData;
+		//int currentPixelOnThisRow = currentPixelFromChunk;
 
-		currentPixelFromThisRow = 0;
-		//std::cout << "\nadding next row values to chunks";
-		// go through saved row and add the values to chunks
-		for (int x = 0; x < totalAmountOfChunksHorizontally; x++) {
+		//std::cout << "\ngoing into adding pixel values into chunks";
+
+		int maxPixelNum = currentPixelFromChunk + 4;
+
+		// Go through the saved row of pixels
+		for (int chunk = 0; chunk < totalAmountOfChunksHorizontally; chunk++) {
 			//std::cout << "\ninside for x < rowlength, current pixel from array: " << currentPixelFromArray;
-			for (int y = 0; y < chunkSize; y++) {
+			//std::cout << "\ninside for(int chunk = 0; chunk < totalAmountOfChunksHorizontally; chunk++)";
+			//std::cout << "\ntotalAmountOfChunksHorizontally = " << totalAmountOfChunksHorizontally;
+
+			for (int pixelNeededForChunk = currentPixelFromChunk; pixelNeededForChunk < maxPixelNum; pixelNeededForChunk++) {
+				//std::cout << "\ninside for(int pixelNeededForChunk = 0; pixelNeededForChunk < chunkSize; pixelNeededForChunk++)";
+				//std::cout << "\n\ncurrentChunk = " << currentChunk;
+				//std::cout << "\nchunk = " << chunk;
+				//std::cout << "\ncurrentPixelOnThisRow = " << currentPixelOnThisRow;
+				//std::cout << "\npixelNeededForChunk = " << pixelNeededForChunk;
+				//std::cout << "\ncurrentPixelFromChunk = " << currentPixelFromChunk << "\n";
 				//std::cout << "\ninside for y < chunkSize, currentChunk = " << currentChunk;
-				//std::cout << "\ncurrentPixelData = " << currentPixelData;
 
-				// add to current chunk
-				//chunks[currentChunk].pixelData[currentPixelData].colorValue = oneRow[currentPixelFromThisRow];
-				allChunksFromImage[currentChunk].colorValueOfPixel[currentPixelData] = 5;
-
+// add to chunk that's currently being populated, currentPixelData tells which of the pixels inside of a chunk is being populated
+								//chunks[currentChunk].pixelData[currentPixelData].colorValue = oneRow[currentPixelFromThisRow];
+				allChunksFromImage[chunk].colorValueOfPixel[pixelNeededForChunk] = 5;
 				currentPixelFromArray++;
-				currentPixelData++;
+				//currentPixelOnThisRow++;
+				//currentPixelFromChunk++;
 			}
+
+			// One chunk gone through, jump to next one
 			currentChunk++;
-			currentPixelData = currentPixelDataOnThisRow;
+			// Jumping to next chunk so resetting the position of currenly being filled pixel
+			//currentPixelFromChunk = 0;
 		}
-		//std::cout << "\nnext row values added to chunks, currentPixelFromArray = " << currentPixelFromArray;
+		std::cout << "\nONE ROW ADDED";
 
 		currentRow++;
+		//currentPixelOnThisRow = 0;
+		currentRowFromChunk++;
 	}
 
-	whatcurrentChunkShouldBe = (currentRow - 1) * totalAmountOfChunksHorizontally;
-	currentChunk = whatcurrentChunkShouldBe;
-	currentPixelData = 0;
+	//whatcurrentChunkShouldBe = (currentRow - 1) * totalAmountOfChunksHorizontally;
+	//currentChunk = whatcurrentChunkShouldBe;
+	//currentPixelFromChunk = 0;
+
+	// reset current row of chunk because this set of chunks is added
 	currentRowFromChunk = 0;
 
 	//std::cout << "\nOut of for loop in the end of adding next rows";
