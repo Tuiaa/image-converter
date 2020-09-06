@@ -74,16 +74,29 @@ void CompressionHelper::populateChunks(BitmapHelper bitmapHelper) {
 	}
 
 	// first row
-	addFirstChunks();
+	addChunksUsingRealValues();
 
 	std::cout << "\nout of for loop ";
 	// print values for test
 
 }
 
-void CompressionHelper::addFirstChunks() {
-	
-	addFirstRow();
+void CompressionHelper::addChunksUsingRealValues() {
+
+
+	int whatcurrentChunkShouldBe = currentRow * amountOfChunksFromWidth;
+	for (int i = 0; i < amountOfChunksFromHeight; i++) {
+		addFirstRow();
+		currentChunk = whatcurrentChunkShouldBe;
+		addNextRows();
+
+		whatcurrentChunkShouldBe = (currentRow - 1) * amountOfChunksFromWidth;
+		currentChunk = whatcurrentChunkShouldBe;
+		currentPixelData = 0;
+		currentRowFromChunk = 0;
+	}
+
+	/*addFirstRow();
 	currentChunk = 0;
 	addNextRows();
 
@@ -93,7 +106,7 @@ void CompressionHelper::addFirstChunks() {
 
 	addFirstRow();
 	currentChunk = amountOfChunksFromWidth;
-	addNextRows();
+	addNextRows();*/
 
 	std::cout << "\nAll chunks populated";
 
@@ -129,58 +142,73 @@ void CompressionHelper::addFirstRow() {
 		currentChunk++;
 		currentPixelData = 0;
 	}
+
+	currentRow++;
 	std::cout << "first row values added to chunks";
 
 }
 
 void CompressionHelper::addNextRows() {
 
-	// add next rows
-	currentRowFromChunk++;
-	std::vector<int> nextRow;
-
-	int nextRowLastItem = (currentRowFromChunk + 1) * rowLength;
-
-	// calculate the next row starting point
-	int startingNumber = currentRowFromChunk * rowLength;
-	for (int a = startingNumber; a < nextRowLastItem; a++) {
-		nextRow.push_back(firstValues[a]);
-		std::cout << "\nvalue added to next row: " << (int)firstValues[a];
+	int howManyRepeats = 0;
+	if (chunkSize == 4) {
+		howManyRepeats = 3;
 	}
-	oneRow.clear();
-	oneRow = nextRow;
-
-	if (currentRowFromChunk == 1) {
-		if (chunkSize == 2) currentPixelData = 2;
-		if (chunkSize == 4) currentPixelData = 4;
-	}
-	else if (currentRowFromChunk == 2) {
-		//if (chunkSize == 2) currentPixelData = 2;
-		if (chunkSize == 4) currentPixelData = 8;
-	}
-	else if (currentRowFromChunk == 3) {
-		//if (chunkSize == 2) currentPixelData = 2;
-		if (chunkSize == 4) currentPixelData = 12;
+	else if (chunkSize == 2) {
+		howManyRepeats == 2;
 	}
 
-	int currentPixelDataOnThisRow = currentPixelData;
+	for (int repeats = 0; repeats < howManyRepeats; repeats++) {
+		// add next rows
+		currentRowFromChunk++;
+		std::vector<int> nextRow;
 
-	currentPixelFromThisRow = 0;
-	std::cout << "\nadding next row values to chunks";
-	// go through saved row and add the values to chunks
-	for (int x = 0; x < amountOfChunksFromWidth; x++) {
-		std::cout << "\ninside for x < rowlength, current pixel from array: " << currentPixelFromArray;
-		for (int y = 0; y < chunkSize; y++) {
-			std::cout << "\ninside for y < chunkSize";
-			// add to current chunk
-			chunks[currentChunk].pixelData[currentPixelData].colorValue = oneRow[currentPixelFromThisRow];
-			currentPixelFromArray++;
-			currentPixelData++;
+		int nextRowLastItem = (currentRowFromChunk + 1) * rowLength;
+
+		// calculate the next row starting point
+		int startingNumber = currentRowFromChunk * rowLength;
+		for (int a = startingNumber; a < nextRowLastItem; a++) {
+			nextRow.push_back(firstValues[a]);
+			std::cout << "\nvalue added to next row: " << (int)firstValues[a];
 		}
-		currentChunk++;
-		currentPixelData = currentPixelDataOnThisRow;
+		oneRow.clear();
+		oneRow = nextRow;
+
+		if (currentRowFromChunk == 1) {
+			if (chunkSize == 2) currentPixelData = 2;
+			if (chunkSize == 4) currentPixelData = 4;
+		}
+		else if (currentRowFromChunk == 2) {
+			//if (chunkSize == 2) currentPixelData = 2;
+			if (chunkSize == 4) currentPixelData = 8;
+		}
+		else if (currentRowFromChunk == 3) {
+			//if (chunkSize == 2) currentPixelData = 2;
+			if (chunkSize == 4) currentPixelData = 12;
+		}
+
+		int currentPixelDataOnThisRow = currentPixelData;
+
+		currentPixelFromThisRow = 0;
+		std::cout << "\nadding next row values to chunks";
+		// go through saved row and add the values to chunks
+		for (int x = 0; x < amountOfChunksFromWidth; x++) {
+			std::cout << "\ninside for x < rowlength, current pixel from array: " << currentPixelFromArray;
+			for (int y = 0; y < chunkSize; y++) {
+				std::cout << "\ninside for y < chunkSize, currentChunk = " << currentChunk;
+				std::cout << "\ncurrentPixelData = " << currentPixelData;
+				// add to current chunk
+				chunks[currentChunk].pixelData[currentPixelData].colorValue = oneRow[currentPixelFromThisRow];
+				currentPixelFromArray++;
+				currentPixelData++;
+			}
+			currentChunk++;
+			currentPixelData = currentPixelDataOnThisRow;
+		}
+		std::cout << "\nnext row values added to chunks, currentPixelFromArray = " << currentPixelFromArray;
+
+		currentRow++;
 	}
-	std::cout << "\nnext row values added to chunks, currentPixelFromArray = " << currentPixelFromArray;
 
 	std::cout << "\nOut of for loop";
 }

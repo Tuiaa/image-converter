@@ -26,7 +26,7 @@ public:
 	std::vector<PixelData> initializeArrayOfPixelData(int amountOfPixelDatas);
 
 	void populateChunks(BitmapHelper bitmapHelper);
-	void addFirstChunks();
+	void addChunksUsingRealValues();
 	void addFirstRow();
 	void addNextRows();
 
@@ -42,8 +42,11 @@ public:
 	int currentPixelFromArray = 0;
 	int currentPixelFromThisRow = 0;
 
+	int currentRow;
+
 	int totalAmountOfChunks;
 	int amountOfChunksFromWidth = 6 / 2;		// width / chunksize
+	int amountOfChunksFromHeight = 4 / 2;		// width / chunksize
 
 	int currentRowFromChunk = 0;
 	int currentChunk = 0;
