@@ -22,7 +22,7 @@ void CompressionHelper::initializeArrayOfChunks(int amountOfChunks) {
 	std::vector<PixelChunk> createdChunks;
 	for (int i = 0; i < amountOfChunks; i++) {
 		//std::vector<PixelData> chunk = initializeArrayOfPixelData(16);
-		std::vector<PixelData> chunk = initializeArrayOfPixelData(4);
+		std::vector<PixelData> chunk = initializeArrayOfPixelData(16);
 		PixelChunk tempPixelChunk;
 		tempPixelChunk.pixelData = chunk;
 
@@ -74,13 +74,13 @@ void CompressionHelper::setTheSettingsToBeUsed(int givenChunkSize, int givenArra
 	rowLength = givenArrayWidth;	// arraywidth
 }
 
-void CompressionHelper::addChunksUsingRealValues() {
+void CompressionHelper::addChunksUsingRealValues(BitmapHelper givenBitmapHelper) {
+
+	bitmapHelper = givenBitmapHelper;
 
 	whatcurrentChunkShouldBe = currentRow * amountOfChunksFromWidth;
 	for (int i = 0; i < amountOfChunksFromHeight; i++) {
 		addFirstRow();
-
-		//std::cout << "\namount of chucks from height: " << amountOfChunksFromHeight;
 	}
 
 	std::cout << "\nAll chunks populated";
@@ -91,26 +91,27 @@ void CompressionHelper::addFirstRow() {
 
 	// amount of first values means how many items there are in the first row of chunks
 	for (int i = 0; i < amountOfFirstValues; i++) {
-		firstValues.push_back(testSmallerDataPix[i]);
-		std::cout << "\nvalue added to first values: " << (int)testSmallerDataPix[i];
+		firstValues.push_back(bitmapHelper.data_pix[i]);
+		//std::cout << "\nvalue added to first values: " << (int)bitmapHelper.data_pix[i];
 	}
 
 	// take first row of that chunk
 	for (int j = 0; j < rowLength; j++) {
 		oneRow.push_back(firstValues[j]);
-		std::cout << "\nvalue added to one row: " << (int)firstValues[j];
+		//std::cout << "\nvalue added to one row: " << (int)firstValues[j];
 	}
 
 	currentPixelFromThisRow = 0;
-	std::cout << "\nadding first row values to chunks";
+	//std::cout << "\nadding first row values to chunks";
 	// go through saved row and add the values to chunks
 	for (int x = 0; x < amountOfChunksFromWidth; x++) {
-		std::cout << "\ninside for x < rowlength, current pixel from array: " << currentPixelFromArray;
+		//std::cout << "\ninside for x < rowlength, current pixel from array: " << currentPixelFromArray;
 		for (int y = 0; y < chunkSize; y++) {
-			std::cout << "\ninside for y < chunkSize, currentChunk = " << currentChunk;
-			std::cout << "\ncurrentPixelData = " << currentPixelData;
+			//std::cout << "\ninside for y < chunkSize, currentChunk = " << currentChunk;
+			//std::cout << "\ncurrentPixelData = " << currentPixelData;
 			// add to current chunk
-			chunks[currentChunk].pixelData[currentPixelData].colorValue = oneRow[currentPixelFromThisRow];
+			//chunks[currentChunk].pixelData[currentPixelData].colorValue = oneRow[currentPixelFromThisRow];
+			chunks[currentChunk].pixelData[currentPixelData].colorValue = 5;
 			currentPixelFromArray++;
 			currentPixelData++;
 		}
@@ -119,7 +120,7 @@ void CompressionHelper::addFirstRow() {
 	}
 
 	currentRow++;
-	std::cout << "\nfirst row values added to chunks";
+	//std::cout << "\nfirst row values added to chunks";
 
 	currentChunk = whatcurrentChunkShouldBe;
 	addNextRows();
@@ -127,9 +128,9 @@ void CompressionHelper::addFirstRow() {
 
 void CompressionHelper::addNextRows() {
 
-	std::cout << "\nADDING NEXT ROWS STARING";
+	//std::cout << "\nADDING NEXT ROWS STARING";
 
-	int howManyRepeats = 1;
+	int howManyRepeats = 3;
 
 	// WHY ISN'T THIS TRIGGERING????
 	if (chunkSize == 4) {
@@ -141,7 +142,7 @@ void CompressionHelper::addNextRows() {
 
 	for (int b = 0; b < howManyRepeats; b++) {
 
-		std::cout << "\nINSIDE REPEATS";
+		//std::cout << "\nINSIDE REPEATS";
 		// add next rows
 		currentRowFromChunk++;
 		std::vector<int> nextRow;
@@ -152,7 +153,7 @@ void CompressionHelper::addNextRows() {
 		int startingNumber = currentRowFromChunk * rowLength;
 		for (int a = startingNumber; a < nextRowLastItem; a++) {
 			nextRow.push_back(firstValues[a]);
-			std::cout << "\nvalue added to next row: " << (int)firstValues[a];
+			//std::cout << "\nvalue added to next row: " << (int)firstValues[a];
 		}
 		oneRow.clear();
 		oneRow = nextRow;
@@ -173,22 +174,23 @@ void CompressionHelper::addNextRows() {
 		int currentPixelDataOnThisRow = currentPixelData;
 
 		currentPixelFromThisRow = 0;
-		std::cout << "\nadding next row values to chunks";
+		//std::cout << "\nadding next row values to chunks";
 		// go through saved row and add the values to chunks
 		for (int x = 0; x < amountOfChunksFromWidth; x++) {
-			std::cout << "\ninside for x < rowlength, current pixel from array: " << currentPixelFromArray;
+			//std::cout << "\ninside for x < rowlength, current pixel from array: " << currentPixelFromArray;
 			for (int y = 0; y < chunkSize; y++) {
-				std::cout << "\ninside for y < chunkSize, currentChunk = " << currentChunk;
-				std::cout << "\ncurrentPixelData = " << currentPixelData;
+				//std::cout << "\ninside for y < chunkSize, currentChunk = " << currentChunk;
+				//std::cout << "\ncurrentPixelData = " << currentPixelData;
 				// add to current chunk
-				chunks[currentChunk].pixelData[currentPixelData].colorValue = oneRow[currentPixelFromThisRow];
+				//chunks[currentChunk].pixelData[currentPixelData].colorValue = oneRow[currentPixelFromThisRow];
+				chunks[currentChunk].pixelData[currentPixelData].colorValue = 5;
 				currentPixelFromArray++;
 				currentPixelData++;
 			}
 			currentChunk++;
 			currentPixelData = currentPixelDataOnThisRow;
 		}
-		std::cout << "\nnext row values added to chunks, currentPixelFromArray = " << currentPixelFromArray;
+		//std::cout << "\nnext row values added to chunks, currentPixelFromArray = " << currentPixelFromArray;
 
 		currentRow++;
 	}
@@ -198,5 +200,5 @@ void CompressionHelper::addNextRows() {
 	currentPixelData = 0;
 	currentRowFromChunk = 0;
 
-	//std::cout << "\nOut of for loop";
+	//std::cout << "\nOut of for loop in the end of adding next rows";
 }

@@ -27,17 +27,17 @@ public:
 
 	void createTestDataSet();
 	void setTheSettingsToBeUsed(int chunkSize, int arrayWidth, int arrayHeight);
-	void addChunksUsingRealValues();
+	void addChunksUsingRealValues(BitmapHelper givenBitmapHelper);
 	void addFirstRow();
 	void addNextRows();
 
+	BitmapHelper bitmapHelper;
 
-
-	int chunkSize = 2;	//should be 4
+	int chunkSize;	//should be 4
 	// otetaan ekojen chunkkien määrä arraysta (testi arraysta 12 ekaa numeroa) --> arraywidth * chunksize
-	int amountOfFirstValues = 6 * 2;	//array width * chunksize
+	int amountOfFirstValues;	//array width * chunksize
 	std::vector<int> firstValues;
-	int howManyRowsInTotal = 12 / 6;	// amountOfFirstValues / arrayWidth
+	int howManyRowsInTotal;	// amountOfFirstValues / arrayWidth
 
 	int currentPixelData = 0;
 	int currentPixelFromArray = 0;
@@ -46,13 +46,13 @@ public:
 	int currentRow;
 
 	int totalAmountOfChunks;
-	int amountOfChunksFromWidth = 6 / 2;		// width / chunksize
-	int amountOfChunksFromHeight = 4 / 2;		// width / chunksize
+	int amountOfChunksFromWidth;		// width / chunksize
+	int amountOfChunksFromHeight;		// width / chunksize
 
 	int currentRowFromChunk = 0;
 	int currentChunk = 0;
 	   
-	int rowLength = 6;	// arraywidth
+	int rowLength;	// arraywidth
 	std::vector<int> oneRow;
 
 	int whatcurrentChunkShouldBe;
