@@ -1,6 +1,4 @@
 #pragma once
-#include "BitmapHelper.h"
-#include "Bitmap.h"
 #include <vector>
 
 struct PixelChunk {
@@ -9,11 +7,6 @@ struct PixelChunk {
 
 class CompressionHelper {
 private:
-	// Vector to save the pixels needed to populate one row of chunks (one chunk is 4x4 pixels)
-	std::vector<int> pixelsNeededForOneRowOfChunks;
-	// Vector to save pixels of one row of an image (so it basically has pixels the same number that's image's width)
-	std::vector<int> pixelsOfOneRowOfImage;
-
 	/*	These values are set in initialiseSettingsForCompression method	*/
 	int chunkSize;								// chunkSize is 4 because BC1 should use 4x4 blocks of texels
 	int totalAmountOfChunks;					// total amound of chunks in one image
@@ -25,27 +18,31 @@ private:
 
 	/*	General helper values	*/
 	int currentPixelFromChunk = 0;
-	int currentPixelFromArray = 0;
 	int currentPixelFromThisRow = 0;
 	int currentRowFromChunk = 0;
 	int currentChunk = 0;
-	int currentRow = 0;
-	int whatcurrentChunkShouldBe;
 
-	std::vector<PixelChunk> allChunksFromImage;
+	std::vector<int> pixelsNeededForOneRowOfChunks;		// one row of chunks is 4 * image width pixels
+	std::vector<int> pixelsOfOneRowOfImage;				// one row of image is image width amount of pixels
+
+	std::vector<PixelChunk> allChunks;
 	unsigned char* allPixelsFromImage;
 
-	int calculateHowManyChunksAreNeeded(int width, int height);
+	/*	Initialization functions	*/
 	void initializeVectorOfChunks();
 	std::vector<int> initializeArrayOfPixelColorValues();
 
-	void addFirstRowOfNewChunk();
-	void calculateAllPixelsNeededForRowOfChunks();
-	void calculateAllPixelsNeededForOneRowOfChunk();
-	void addNextRows();
+	/*	Helper functions  */
+	int calculateHowManyChunksAreNeeded(int width, int height);
+	void calculateAllPixelsNeededForRowOfChunks(int startingPoint);
+	void calculatePixelsFromOneRowOfImage(int startingPoint);
+	int getCurrentChunkStartingPixelPosition();
+
+
+	void sliceImageIntoOneChunkRow(int startingPoint);
+	void sliceImageIntoChunks();
 
 public:
 	void initialiseSettingsForCompression(int imageWidth, int imageHeight, unsigned char* pixelsFromImage);
-
 	void startCompression();
 };
