@@ -17,7 +17,8 @@ public:
 	int totalSize;
 
 	void saveBitmapValues(int width, int height,int bytesPerPixel, unsigned char *pixelData);
-	void readBitmapImageFromFile(const char *fileName, int *width, int *height, int *bytesPerPixel);
+	//void readBitmapImageFromFile(const char *fileName, int *width, int *height, int *bytesPerPixel);
+	void readBitmapImageFromFile(const char *fileName);
 	void writeBitmap(const char *fileName, int width, int height, int bytesPerPixel);
 
 	void createTexelBlocksFromBitmap();

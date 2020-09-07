@@ -31,11 +31,11 @@ int main()
 	int bytesPerPixel;
 
 	BitmapHelper bitmapHelper = BitmapHelper();
-	bitmapHelper.createBitmap();
+	//bitmapHelper.createBitmap();
 
 	/*	 READING	*/
-	bitmapHelper.readBitmapImageFromFile("bitmapTestImage.bmp", &width, &height, &bytesPerPixel);
-	bitmapHelper.saveBitmapValues(width, height, bytesPerPixel, bitmapHelper.data_pix);
+	bitmapHelper.readBitmapImageFromFile("bitmapTestImage.bmp");
+	//bitmapHelper.saveBitmapValues(width, height, bytesPerPixel, bitmapHelper.data_pix);
 
 	/*	 COMPRESSION	*/
 	CompressionHelper compressionHelper = CompressionHelper();

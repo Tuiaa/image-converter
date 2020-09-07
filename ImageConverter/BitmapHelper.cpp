@@ -2,10 +2,13 @@
 #include "BitmapHelper.h"
 #include <iostream>
 
+// Offsets gotten from BMP table
 #define DATA_OFFSET_OFFSET 0x000A
 #define WIDTH_OFFSET 0x0012
 #define HEIGHT_OFFSET 0x0016
 #define BITS_PER_PIXEL_OFFSET 0x001C
+
+// Default values gotten from BMP table
 #define HEADER_SIZE 14
 #define INFO_HEADER_SIZE 40
 #define NO_COMPRESION 0
@@ -16,56 +19,31 @@ void BitmapHelper::createBitmap() {
 	bitmap = Bitmap();
 }
 
-void BitmapHelper::saveBitmapValues(int width, int height, int bytesPerPixel, unsigned char *pixelDataFromFile) {
 
-	// header
-	bitmap.bitmapFileHeader.filesize = height + HEADER_SIZE + INFO_HEADER_SIZE;
-	bitmap.bitmapFileHeader.dataOffset = HEADER_SIZE + INFO_HEADER_SIZE;
 
-	//infoheader
-	bitmap.dibHeader.infoHeaderSize = INFO_HEADER_SIZE;
-	bitmap.dibHeader.width = width;
-	bitmap.dibHeader.height = height;
-
-	//extra
-	bitmap.bytesPerPixel = bytesPerPixel;
-
-	bitmap.dibHeader.bitsPerPixel = bytesPerPixel * 8;
-	bitmap.dibHeader.compression = NO_COMPRESION;
-	bitmap.dibHeader.imageSize = width * height*bytesPerPixel;
-	bitmap.dibHeader.horizontalResolution = 11811; //300 dpi
-	bitmap.dibHeader.verticalResolution = 11811; //300 dpi
-	bitmap.dibHeader.colorsUsedInColorPalette = MAX_NUMBER_OF_COLORS;
-	bitmap.dibHeader.importantColors = ALL_COLORS_REQUIRED;
-
-	bitmap.pixelData = pixelDataFromFile;
-}
-
-void BitmapHelper::readBitmapImageFromFile(const char *fileName, int *width, int *height, int *bytesPerPixel)
+void BitmapHelper::readBitmapImageFromFile(const char *fileName)
 {
+	int width;
+	int height;
+	int bytesPerPixel;
 
-	FILE *imageFile = fopen(fileName, "rb");	// Opens the image file
+	FILE *imageFile = fopen(fileName, "rb");				// Opens the image file
 
-	// Seek width & height of the image and save the values
-	fseek(imageFile, WIDTH_OFFSET, SEEK_SET);
-	fread(width, 4, 1, imageFile);
-
-	std::cout << "\nsaved width: " << width;
-
+	fseek(imageFile, WIDTH_OFFSET, SEEK_SET);				// Use SEEK to find width & height
+	fread(&width, 4, 1, imageFile);							// The size is 4 bytes (value from BMP table)
 	fseek(imageFile, HEIGHT_OFFSET, SEEK_SET);
-	fread(height, 4, 1, imageFile);	// bitmpheader size of with and height in bytes is 4
+	fread(&height, 4, 1, imageFile);
 
 	// save bits per pixel value
-	// it's size in bytes is two so it has to be short
 	short bitsPerPixel;
 	fseek(imageFile, BITS_PER_PIXEL_OFFSET, SEEK_SET);
-	fread(&bitsPerPixel, 2, 1, imageFile);
-	*bytesPerPixel = ((int)bitsPerPixel) / 8;
+	fread(&bitsPerPixel, 2, 1, imageFile);					// it's size 2 bytes so it has to be short
+	bytesPerPixel = ((int)bitsPerPixel) / 8;
 
-	size = (*height * (*width *(24 / 8)));	// size is the value of pointer height and width multplied, and that's multiplied by 24*8 (24bitmap)
+	size = (height * (width *(24 / 8)));	// size is the value of pointer height and width multplied, and that's multiplied by 24*8 (24bitmap)
 
-	int rowSize = (*width)*(*bytesPerPixel);
-	totalSize = rowSize * (*height);
+	int rowSize = (width)*(bytesPerPixel);
+	totalSize = rowSize * (height);
 
 	int dataOffset;
 	fseek(imageFile, DATA_OFFSET_OFFSET, SEEK_SET);	// Seek from beginning of the file (SEEK_SET)
@@ -76,6 +54,8 @@ void BitmapHelper::readBitmapImageFromFile(const char *fileName, int *width, int
 	fread(data_pix, sizeof(unsigned char), totalSize, imageFile);
 
 	fclose(imageFile);
+
+	saveBitmapValues(width, height, bytesPerPixel, data_pix);
 
 	//// rotate bgr to rgb
 	//unsigned char tmp;
@@ -90,6 +70,35 @@ void BitmapHelper::readBitmapImageFromFile(const char *fileName, int *width, int
 	//	std::cout << "\nthis pixel color value: " << (int)data_pix[i];
 	//}
 
+}
+
+/*
+ *		Save Bitmap Values
+ *		- takes the read values and saves them in the created bitmap object
+ */
+void BitmapHelper::saveBitmapValues(int width, int height, int bytesPerPixel, unsigned char *pixelDataFromFile) {
+
+	bitmap = Bitmap();
+
+	// Bitmap File Header
+	bitmap.bitmapFileHeader.filesize = height + HEADER_SIZE + INFO_HEADER_SIZE;
+	bitmap.bitmapFileHeader.dataOffset = HEADER_SIZE + INFO_HEADER_SIZE;
+
+	// DIB Header
+	bitmap.dibHeader.infoHeaderSize = INFO_HEADER_SIZE;
+	bitmap.dibHeader.width = width;
+	bitmap.dibHeader.height = height;
+	bitmap.dibHeader.bitsPerPixel = bytesPerPixel * 8;
+	bitmap.dibHeader.compression = NO_COMPRESION;
+	bitmap.dibHeader.imageSize = width * height * bytesPerPixel;
+	bitmap.dibHeader.horizontalResolution = 11811;						//300 dpi
+	bitmap.dibHeader.verticalResolution = 11811;						//300 dpi
+	bitmap.dibHeader.colorsUsedInColorPalette = MAX_NUMBER_OF_COLORS;
+	bitmap.dibHeader.importantColors = ALL_COLORS_REQUIRED;
+
+	// General
+	bitmap.bytesPerPixel = bytesPerPixel;
+	bitmap.pixelData = pixelDataFromFile;
 }
 
 void BitmapHelper::writeBitmap(const char *fileName, int width, int height, int bytesPerPixel)
@@ -145,7 +154,7 @@ void BitmapHelper::writeBitmap(const char *fileName, int width, int height, int 
 	for (int i = 0; i < totalSize; i++)
 	{
 
-		fwrite(&data_pix[i], 1, 1, outputFile);
+		fwrite(&bitmap.pixelData[i], 1, 1, outputFile);
 	}
 	fclose(outputFile);
 }
