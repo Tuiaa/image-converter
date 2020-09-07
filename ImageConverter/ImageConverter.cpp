@@ -33,24 +33,19 @@ int main()
 	BitmapHelper bitmapHelper = BitmapHelper();
 	bitmapHelper.createBitmap();
 
+	/*	 READING	*/
 	bitmapHelper.readBitmapImageFromFile("bitmapTestImage.bmp", &width, &height, &bytesPerPixel);
-
 	bitmapHelper.saveBitmapValues(width, height, bytesPerPixel, bitmapHelper.data_pix);
 
-	bitmapHelper.writeBitmap("img2.bmp", bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.bitmap.bytesPerPixel);
-
-	// COMPRESSION
+	/*	 COMPRESSION	*/
 	CompressionHelper compressionHelper = CompressionHelper();
 
-	//int amountOfChunks = compressionHelper.calculateHowManyChunksAreNeeded(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height);
-	//int amountOfChunks = compressionHelper.calculateHowManyChunksAreNeeded(6, 4);
-
-	// Only works with width = 6 and height = 4
-	//compressionHelper.createTestDataSet();
-	// So test values can be used
-
-	compressionHelper.initialiseSettingsForCompression(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.data_pix);
+	compressionHelper.initializeSettingsForCompression(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.data_pix);
 	compressionHelper.startCompression();
+
+	/*	 SAVING		*/
+	bitmapHelper.writeBitmap("img2.bmp", bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.bitmap.bytesPerPixel);
+
 
 	std::cout << "\nPress any key to close the console\n";
 	// Pauses the console until some key is pressed

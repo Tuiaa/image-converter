@@ -3,11 +3,11 @@
 #include <vector>
 
 /*
- *		Initialise Settings For Compression
+ *		Initialize Settings For Compression
  *		- takes image width and height as parameters
  *		- amount of chunks the image should be sliced into can be calculated using that info
  */
-void CompressionHelper::initialiseSettingsForCompression(int widthOfUsedImage, int heightOfUsedImage, unsigned char* pixelsFromUsedImage) {
+void CompressionHelper::initializeSettingsForCompression(int widthOfUsedImage, int heightOfUsedImage, unsigned char* pixelsFromUsedImage) {
 	chunkSize = 4;
 
 	totalAmountOfChunks = calculateHowManyChunksAreNeeded(widthOfUsedImage, heightOfUsedImage);

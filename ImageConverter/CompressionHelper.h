@@ -43,6 +43,6 @@ private:
 	void sliceImageIntoChunks();
 
 public:
-	void initialiseSettingsForCompression(int imageWidth, int imageHeight, unsigned char* pixelsFromImage);
+	void initializeSettingsForCompression(int imageWidth, int imageHeight, unsigned char* pixelsFromImage);
 	void startCompression();
 };
