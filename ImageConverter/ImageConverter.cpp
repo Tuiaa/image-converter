@@ -39,13 +39,11 @@ int main()
 
 	/*	 COMPRESSION	*/
 	CompressionHelper compressionHelper = CompressionHelper();
-
-	compressionHelper.initializeSettingsForCompression(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.data_pix);
+	compressionHelper.initializeSettingsForCompression(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.bitmap.pixelData);
 	compressionHelper.startCompression();
 
 	/*	 SAVING		*/
-	bitmapHelper.writeBitmap("img2.bmp", bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.bitmap.bytesPerPixel);
-
+	bitmapHelper.writeBitmap("img2.bmp");
 
 	std::cout << "\nPress any key to close the console\n";
 	// Pauses the console until some key is pressed

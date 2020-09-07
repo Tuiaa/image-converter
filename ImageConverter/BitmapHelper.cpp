@@ -15,12 +15,6 @@
 #define MAX_NUMBER_OF_COLORS 0
 #define ALL_COLORS_REQUIRED 0
 
-void BitmapHelper::createBitmap() {
-	bitmap = Bitmap();
-}
-
-
-
 void BitmapHelper::readBitmapImageFromFile(const char *fileName)
 {
 	int width;
@@ -40,7 +34,7 @@ void BitmapHelper::readBitmapImageFromFile(const char *fileName)
 	fread(&bitsPerPixel, 2, 1, imageFile);					// it's size 2 bytes so it has to be short
 	bytesPerPixel = ((int)bitsPerPixel) / 8;
 
-	size = (height * (width *(24 / 8)));	// size is the value of pointer height and width multplied, and that's multiplied by 24*8 (24bitmap)
+	int size = (height * (width *(24 / 8)));	// size is the value of image height and width multiplied, and that's multiplied by 24*8 (24bitmap)
 
 	int rowSize = (width)*(bytesPerPixel);
 	totalSize = rowSize * (height);
@@ -49,27 +43,13 @@ void BitmapHelper::readBitmapImageFromFile(const char *fileName)
 	fseek(imageFile, DATA_OFFSET_OFFSET, SEEK_SET);	// Seek from beginning of the file (SEEK_SET)
 	fread(&dataOffset, 4, 1, imageFile);
 
-	data_pix = new unsigned char[totalSize];
+	unsigned char* tempPixelArray = new unsigned char[totalSize];
 	fseek(imageFile, dataOffset, SEEK_SET);
-	fread(data_pix, sizeof(unsigned char), totalSize, imageFile);
+	fread(tempPixelArray, sizeof(unsigned char), totalSize, imageFile);
 
 	fclose(imageFile);
 
-	saveBitmapValues(width, height, bytesPerPixel, data_pix);
-
-	//// rotate bgr to rgb
-	//unsigned char tmp;
-	//for (int i = 0; i < totalSize; i += 3)
-	//{
-	//	//tmp = data_pix[i];
-
-	//	//data_pix[i] = data_pix[i + 2];
-
-	//	//data_pix[i + 2] = tmp;
-
-	//	std::cout << "\nthis pixel color value: " << (int)data_pix[i];
-	//}
-
+	saveBitmapValues(width, height, bytesPerPixel, tempPixelArray);
 }
 
 /*
@@ -101,64 +81,39 @@ void BitmapHelper::saveBitmapValues(int width, int height, int bytesPerPixel, un
 	bitmap.pixelData = pixelDataFromFile;
 }
 
-void BitmapHelper::writeBitmap(const char *fileName, int width, int height, int bytesPerPixel)
+/*
+ *		Write Bitmap
+¨*		- creates a new bitmap file
+ */
+void BitmapHelper::writeBitmap(const char *fileName)
 {
-
 	FILE *outputFile = fopen(fileName, "wb");
 
-	//*****HEADER************//
-	//signature
+	// Bitmap File Header
 	fwrite(&bitmap.bitmapFileHeader.BM[0], 1, 1, outputFile);
 	fwrite(&bitmap.bitmapFileHeader.BM[1], 1, 1, outputFile);
-
-	//filesize
 	fwrite(&bitmap.bitmapFileHeader.filesize, 4, 1, outputFile);
-
-	//reserved
 	fwrite(&bitmap.bitmapFileHeader.filesize, 4, 1, outputFile);
-
-	// Data offset
 	fwrite(&bitmap.bitmapFileHeader.dataOffset, 4, 1, outputFile);
 
-	//*******INFO*HEADER******//
-	//int infoHeaderSize
+	// DIB Header
 	fwrite(&bitmap.dibHeader.infoHeaderSize, 4, 1, outputFile);
-
-	// width and height
 	fwrite(&bitmap.dibHeader.width, 4, 1, outputFile);
 	fwrite(&bitmap.dibHeader.height, 4, 1, outputFile);
-
-	// color planes
 	fwrite(&bitmap.dibHeader.colorPlanes, 2, 1, outputFile);
-
-	// bitsperpixel
 	fwrite(&bitmap.dibHeader.bitsPerPixel, 2, 1, outputFile);
-
-
-	//write compression
 	fwrite(&bitmap.dibHeader.compression, 4, 1, outputFile);
-
-	//write image size(in bytes)
 	fwrite(&bitmap.dibHeader.imageSize, 4, 1, outputFile);
-
-	// resolution
 	fwrite(&bitmap.dibHeader.horizontalResolution, 4, 1, outputFile);
 	fwrite(&bitmap.dibHeader.verticalResolution, 4, 1, outputFile);
-
-	// color palette
 	fwrite(&bitmap.dibHeader.colorsUsedInColorPalette, 4, 1, outputFile);
-
-	// imporant colors
 	fwrite(&bitmap.dibHeader.importantColors, 4, 1, outputFile);
 
+	// Add the pixel data
 	for (int i = 0; i < totalSize; i++)
 	{
-
 		fwrite(&bitmap.pixelData[i], 1, 1, outputFile);
 	}
+
 	fclose(outputFile);
-}
-
-void BitmapHelper::createTexelBlocksFromBitmap() {
-
 }
