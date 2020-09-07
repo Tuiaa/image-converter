@@ -1,5 +1,3 @@
-// ImageConverter.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <conio.h>
@@ -7,56 +5,39 @@
 #include "BitmapHelper.h"
 #include "CompressionHelper.h"
 
-
 int main()
 {
-	std::string inputtedFileName;
-	std::cout << "Enter bitmap file name:\n";
-	std::cin >> inputtedFileName;
+	std::string inputtedFileNameString;
+	std::cout << "Enter the name of bitmap file you wish to compress (without .bmp):\n";
+	std::cin >> inputtedFileNameString;
 
-	////inputtedFileName = "";
-	//if (!inputtedFileName.empty()) {
-	//	BitmapFileLoader bmpFileLoader = BitmapFileLoader(inputtedFileName);
+	std::string inputtedFileNameStringWithoutExtension = inputtedFileNameString;
+	inputtedFileNameString = inputtedFileNameString + ".bmp";
+	const char *inputtedFileName = inputtedFileNameString.c_str();
 
-	//	//bmpFileLoader.printBitmapFileName();
-	//	bmpFileLoader.loadBitmapFromFolder();
-	//}
-	//else {
-	//	std::cout << "Filename was not supported!";
-	//}
+	std::cout << "The file you input was:" << inputtedFileNameString;
 
-	int width;
-	int height;
-	int bytesPerPixel;
+	std::string outputFileNameString = inputtedFileNameStringWithoutExtension + "_compressed.bmp";
+	const char *outputFileName = outputFileNameString.c_str();
 
-	BitmapHelper bitmapHelper = BitmapHelper();
-	//bitmapHelper.createBitmap();
+	if (!inputtedFileNameString.empty()) {
+		BitmapHelper bitmapHelper = BitmapHelper();
 
-	/*	 READING	*/
-	bitmapHelper.readBitmapImageFromFile("bitmapTestImage.bmp");
-	//bitmapHelper.saveBitmapValues(width, height, bytesPerPixel, bitmapHelper.data_pix);
+		/*	 READING	*/
+		bitmapHelper.readBitmapImageFromFile(inputtedFileName);
 
-	/*	 COMPRESSION	*/
-	CompressionHelper compressionHelper = CompressionHelper();
-	compressionHelper.initializeSettingsForCompression(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.bitmap.pixelData);
-	compressionHelper.startCompression();
+		/*	 COMPRESSION	*/
+		CompressionHelper compressionHelper = CompressionHelper();
+		compressionHelper.initializeSettingsForCompression(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.bitmap.pixelData);
+		compressionHelper.startCompression();
 
-	/*	 SAVING		*/
-	bitmapHelper.writeBitmap("img2.bmp");
+		/*	 SAVING		*/
+		bitmapHelper.writeBitmap(outputFileName);
+	}
+	else {
+		std::cout << "Filename was not supported, please restart the app and try again!";
+	}
 
 	std::cout << "\nPress any key to close the console\n";
-	// Pauses the console until some key is pressed
 	_getch();
-
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file

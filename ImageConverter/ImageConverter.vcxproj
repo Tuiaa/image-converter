@@ -151,7 +151,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Bitmap.cpp" />
     <ClCompile Include="BitmapHelper.cpp" />
     <ClCompile Include="CompressionHelper.cpp" />
     <ClCompile Include="ImageConverter.cpp" />
