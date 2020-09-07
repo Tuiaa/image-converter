@@ -8,7 +8,6 @@
 #include "CompressionHelper.h"
 
 
-
 int main()
 {
 	std::string inputtedFileName;

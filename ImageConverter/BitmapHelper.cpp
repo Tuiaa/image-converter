@@ -15,6 +15,11 @@
 #define MAX_NUMBER_OF_COLORS 0
 #define ALL_COLORS_REQUIRED 0
 
+/*
+ *		Read Bitmap Imge From File
+ *		- uses seek to find correct point from bitmap file
+ *		- gets all the info from bitmap
+ */
 void BitmapHelper::readBitmapImageFromFile(const char *fileName)
 {
 	int width;
@@ -23,7 +28,7 @@ void BitmapHelper::readBitmapImageFromFile(const char *fileName)
 
 	FILE *imageFile = fopen(fileName, "rb");				// Opens the image file
 
-	fseek(imageFile, WIDTH_OFFSET, SEEK_SET);				// Use SEEK to find width & height
+	fseek(imageFile, WIDTH_OFFSET, SEEK_SET);
 	fread(&width, 4, 1, imageFile);							// The size is 4 bytes (value from BMP table)
 	fseek(imageFile, HEIGHT_OFFSET, SEEK_SET);
 	fread(&height, 4, 1, imageFile);
@@ -32,15 +37,15 @@ void BitmapHelper::readBitmapImageFromFile(const char *fileName)
 	short bitsPerPixel;
 	fseek(imageFile, BITS_PER_PIXEL_OFFSET, SEEK_SET);
 	fread(&bitsPerPixel, 2, 1, imageFile);					// it's size 2 bytes so it has to be short
-	bytesPerPixel = ((int)bitsPerPixel) / 8;
+	bytesPerPixel = (int)bitsPerPixel / 8;
 
-	int size = (height * (width *(24 / 8)));	// size is the value of image height and width multiplied, and that's multiplied by 24*8 (24bitmap)
-
-	int rowSize = (width)*(bytesPerPixel);
-	totalSize = rowSize * (height);
+	// Size is the value of image height and width multiplied, and that's multiplied by 24*8 (24 bitmap)
+	int size = (height * (width *(24 / 8)));
+	int rowSize = width * bytesPerPixel;
+	totalSize = rowSize * height;
 
 	int dataOffset;
-	fseek(imageFile, DATA_OFFSET_OFFSET, SEEK_SET);	// Seek from beginning of the file (SEEK_SET)
+	fseek(imageFile, DATA_OFFSET_OFFSET, SEEK_SET);
 	fread(&dataOffset, 4, 1, imageFile);
 
 	unsigned char* tempPixelArray = new unsigned char[totalSize];
