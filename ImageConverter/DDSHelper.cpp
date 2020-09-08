@@ -119,7 +119,7 @@ void DDSHelper::readDDSImageFromFile(const char *fileName)
 
 
 	//GLuint tid = 0;
-
+	dds = DDS();
 	// open the DDS file for binary reading and get file size
 	FILE* f = fopen(fileName, "rb");
 
@@ -129,10 +129,27 @@ void DDSHelper::readDDSImageFromFile(const char *fileName)
 	fseek(f, 0, SEEK_SET);
 
 	totalSize = file_size;
+
+	//magicValue = new unsigned char[4];
+	fread(&dds.dwMagic, 1, 4, f);
+
 	// allocate new unsigned char space with 4 (file code) + 124 (header size) bytes
-	// read in 128 bytes from the file
-	readHeader = new unsigned char[file_size];
-	fread(readHeader, 1, file_size, f);
+// read in 128 bytes from the file
+	readHeader = new unsigned char[128];
+	fseek(f, 0, SEEK_SET);
+	fread(readHeader, 1, 128, f);
+
+	int sizewithoutstart = totalSize - 128;
+	readFullFileExceptHeaderAndMagic = new unsigned char[sizewithoutstart];
+	//fseek(f, 127, SEEK_SET);
+	fread(readFullFileExceptHeaderAndMagic, 1, sizewithoutstart, f);
+
+	//readFullFileExceptHeaderAndMagic = new unsigned char[totalSize - 128];
+	//fread(readFullFileExceptHeaderAndMagic, 1, totalSize, f);
+
+	readFullFile = new unsigned char[file_size];
+	fseek(f, 0, SEEK_SET);
+	fread(readFullFile, 1, file_size, f);
 
 	//readHeader10 = new unsigned char[32];
 	//fseek(f, 128, SEEK_SET);
@@ -217,7 +234,7 @@ exit:
 
 void DDSHelper::saveDDSValues(int width, int height, unsigned char *pixelDataFromFile) {
 
-	dds = DDS();
+	//dds = DDS();
 
 	dds.dwMagic = DDS_MAGIC;
 
@@ -258,7 +275,9 @@ void DDSHelper::writeDDSFile(const char *fileName)
 	//fwrite(&bitmap.bitmapFileHeader.BM[0], 1, 1, outputFile);
 	//fwrite(&dds.dwMagic, 4, 1, outputFile);								// length 4
 	//fwrite(&bitmap.bitmapFileHeader.BM[1], 1, 1, outputFile);
-	fwrite(readHeader, totalSize, 1, outputFile);
+	fwrite(readHeader, 128, 1, outputFile);
+	long size = totalSize - 128;
+	fwrite(readFullFileExceptHeaderAndMagic, size, 1, outputFile);
 	//fwrite(readHeader10, 32, 1, outputFile);
 
 	// Add the pixel data
