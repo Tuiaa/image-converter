@@ -1,7 +1,7 @@
 #pragma once
 
 
-typedef enum DXGI_FORMAT { DXGI_FORMAT_BC1_TYPELESS };
+typedef enum DXGI_FORMAT { DXGI_FORMAT_BC1_UNORM };
 
 typedef enum D3D10_RESOURCE_DIMENSION {
 	D3D10_RESOURCE_DIMENSION_UNKNOWN,
@@ -65,7 +65,7 @@ struct DDS_HEADER_DXT10 {
 };
 
 class DDS {
-private:
+public:
 	DWORD dwMagic;
 	DDS_HEADER header;
 	DDS_HEADER_DXT10 header10;
