@@ -17,12 +17,27 @@ typedef unsigned long DWORD;
 typedef unsigned int UINT;
 
 /*
+ *		DDS Pixel Format
+ *		- surface pixel format
+ */
+struct DDS_PIXELFORMAT {
+	DWORD dwSize;								// size is 32
+	DWORD dwFlags;
+	DWORD dwFourCC;
+	DWORD dwRGBBitCount;
+	DWORD dwRBitMask;
+	DWORD dwGBitMask;
+	DWORD dwBBitMask;
+	DWORD dwABitMask;
+};
+
+/*
  *		DDS Header
  *		- describes the file header
  */
 struct DDS_HEADER {
-	DWORD           dwSize;
-	DWORD           dwFlags;
+	DWORD           dwSize;						// size of structure, is 124
+	DWORD           dwFlags;					// flags that indicate which members contain valid data
 	DWORD           dwHeight;
 	DWORD           dwWidth;
 	DWORD           dwPitchOrLinearSize;
@@ -35,21 +50,6 @@ struct DDS_HEADER {
 	DWORD           dwCaps3;
 	DWORD           dwCaps4;
 	DWORD           dwReserved2;
-};
-
-/*
- *		DDS Pixel Format
- *		- surface pixel format
- */
-struct DDS_PIXELFORMAT {
-	DWORD dwSize;
-	DWORD dwFlags;
-	DWORD dwFourCC;
-	DWORD dwRGBBitCount;
-	DWORD dwRBitMask;
-	DWORD dwGBitMask;
-	DWORD dwBBitMask;
-	DWORD dwABitMask;
 };
 
 /*

@@ -4,6 +4,7 @@
 #include <string>
 #include "BitmapHelper.h"
 #include "CompressionHelper.h"
+#include "DDSHelper.h"
 
 int main()
 {
@@ -22,17 +23,22 @@ int main()
 
 	if (!inputtedFileNameString.empty()) {
 		BitmapHelper bitmapHelper = BitmapHelper();
+		DDSHelper ddsHelper = DDSHelper();
 
 		/*	 READING	*/
-		bitmapHelper.readBitmapImageFromFile(inputtedFileName);
+		//bitmapHelper.readBitmapImageFromFile(inputtedFileName);
 
 		/*	 COMPRESSION	*/
 		CompressionHelper compressionHelper = CompressionHelper();
-		compressionHelper.initializeSettingsForCompression(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.bitmap.pixelData);
-		compressionHelper.startCompression();
+		//compressionHelper.initializeSettingsForCompression(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.bitmap.pixelData);
+		//compressionHelper.startCompression();
 
 		/*	 SAVING		*/
-		bitmapHelper.writeBitmap(outputFileName);
+		//bitmapHelper.writeBitmap(outputFileName);
+
+		ddsHelper.readDDSImageFromFile("test-dxt1-dds-file.dds");
+		//ddsHelper.saveDDSValues(400, 120, bitmapHelper.bitmap.pixelData);
+		ddsHelper.writeDDSFile("new-test-dxt1-dds-file.dds");
 	}
 	else {
 		std::cout << "Filename was not supported, please restart the app and try again!";
