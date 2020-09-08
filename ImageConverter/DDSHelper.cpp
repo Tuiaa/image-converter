@@ -110,33 +110,33 @@ void DDSHelper::readDDSImageFromFile(const char *fileName)
 
 	FILE *imageFile = fopen(fileName, "rb");				// Opens the image file
 
-	fseek(imageFile, DDS_WIDTH, SEEK_SET);
-	fread(&width, 4, 1, imageFile);							// The size is 4 bytes (value from BMP table)
-	fseek(imageFile, DDS_HEIGHT, SEEK_SET);
-	fread(&height, 4, 1, imageFile);
+	//fseek(imageFile, DDS_WIDTH, SEEK_SET);
+	//fread(&width, 4, 1, imageFile);							// The size is 4 bytes (value from BMP table)
+	//fseek(imageFile, DDS_HEIGHT, SEEK_SET);
+	//fread(&height, 4, 1, imageFile);
 
 	// save bits per pixel value
-	short bitsPerPixel;
-	fseek(imageFile, BITS_PER_PIXEL_OFFSET, SEEK_SET);
-	fread(&bitsPerPixel, 2, 1, imageFile);					// it's size 2 bytes so it has to be short
-	bytesPerPixel = (int)bitsPerPixel / 8;
+	//short bitsPerPixel;
+	//fseek(imageFile, BITS_PER_PIXEL_OFFSET, SEEK_SET);
+	//fread(&bitsPerPixel, 2, 1, imageFile);					// it's size 2 bytes so it has to be short
+	//bytesPerPixel = (int)bitsPerPixel / 8;
 
 	// Size is the value of image height and width multiplied, and that's multiplied by 24*8 (24 bitmap)
-	int size = (height * (width *(24 / 8)));
+	/*int size = (height * (width *(24 / 8)));
 	int rowSize = width * bytesPerPixel;
-	totalSize = rowSize * height;
+	totalSize = rowSize * height;*/
 
-	int dataOffset;
+	/*int dataOffset;
 	fseek(imageFile, DATA_OFFSET_OFFSET, SEEK_SET);
-	fread(&dataOffset, 4, 1, imageFile);
+	fread(&dataOffset, 4, 1, imageFile);*/
 
-	unsigned char* tempPixelArray = new unsigned char[totalSize];
+	/*unsigned char* tempPixelArray = new unsigned char[totalSize];
 	fseek(imageFile, dataOffset, SEEK_SET);
 	fread(tempPixelArray, sizeof(unsigned char), totalSize, imageFile);
 
 	fclose(imageFile);
 	int depth = 0;
-	saveDDSValues(width, height, bytesPerPixel, depth, tempPixelArray);
+	saveDDSValues(width, height, bytesPerPixel, depth, tempPixelArray);*/
 }
 
 void DDSHelper::saveDDSValues(int width, int height, int depth, int bytesPerPixel, unsigned char *pixelDataFromFile) {
