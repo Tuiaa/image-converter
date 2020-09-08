@@ -10,6 +10,7 @@ public:
 	void writeDDSFile(const char* fileName);
 
 	long totalSize;
+	unsigned char* magicValue;
 	unsigned char* readFullFileExceptHeaderAndMagic;
 	unsigned char* readFullFile;
 	unsigned char* readHeader;

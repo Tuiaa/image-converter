@@ -130,15 +130,15 @@ void DDSHelper::readDDSImageFromFile(const char *fileName)
 
 	totalSize = file_size;
 
-	//magicValue = new unsigned char[4];
-	fread(&dds.dwMagic, 1, 4, f);
+	magicValue = new unsigned char[4];
+	fread(magicValue, 1, 4, f);
 
-	// allocate new unsigned char space with 4 (file code) + 124 (header size) bytes
-// read in 128 bytes from the file
-	readHeader = new unsigned char[128];
-	fseek(f, 0, SEEK_SET);
-	fread(readHeader, 1, 128, f);
+	// reads file header
+	readHeader = new unsigned char[124];
+	//fseek(f, 0, SEEK_SET);
+	fread(readHeader, 1, 124, f);
 
+	// reads rest of the file
 	int sizewithoutstart = totalSize - 128;
 	readFullFileExceptHeaderAndMagic = new unsigned char[sizewithoutstart];
 	//fseek(f, 127, SEEK_SET);
@@ -275,7 +275,8 @@ void DDSHelper::writeDDSFile(const char *fileName)
 	//fwrite(&bitmap.bitmapFileHeader.BM[0], 1, 1, outputFile);
 	//fwrite(&dds.dwMagic, 4, 1, outputFile);								// length 4
 	//fwrite(&bitmap.bitmapFileHeader.BM[1], 1, 1, outputFile);
-	fwrite(readHeader, 128, 1, outputFile);
+	fwrite(magicValue, 4, 1, outputFile);
+	fwrite(readHeader, 124, 1, outputFile);
 	long size = totalSize - 128;
 	fwrite(readFullFileExceptHeaderAndMagic, size, 1, outputFile);
 	//fwrite(readHeader10, 32, 1, outputFile);
