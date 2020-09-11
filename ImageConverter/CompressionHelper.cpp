@@ -76,6 +76,8 @@ std::vector<int> CompressionHelper::initializeArrayOfPixelColorValues() {
  */
 void CompressionHelper::startCompression() {
 	sliceImageIntoChunks();
+
+	std::cout << "jee image sliced!";
 	// TODO calculate min and max color values of one chunk (and also two intermediate colors)
 	// TODO apply the calculated colors into the chunk and repeat process for all chunks
 	// TODO take all chunks and put them back to the uncharted char array of pixels
@@ -147,7 +149,8 @@ void CompressionHelper::sliceImageIntoOneChunkRow(int startingPixel) {
 		for (int chunk = startingPixel; chunk < currentRowLastPixelPosition; chunk++) {
 			for (int pixelPosition = currentChunkStartingPixelPosition; pixelPosition < maxPixelPositionOnChunk; pixelPosition++) {
 
-				allChunks[chunk].colorValueOfPixel[pixelPosition] = 5;
+				allChunks[chunk].colorValueOfPixel[pixelPosition] = (int)allPixelsFromImage[currentPixelNumPosition];
+				currentPixelNumPosition++;
 			}
 
 			currentChunk++;

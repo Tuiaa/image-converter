@@ -21,6 +21,7 @@ private:
 	int currentPixelFromThisRow = 0;
 	int currentRowFromChunk = 0;
 	int currentChunk = 0;
+	int currentPixelNumPosition = 0;
 
 	std::vector<int> pixelsNeededForOneRowOfChunks;		// one row of chunks is 4 * image width pixels
 	std::vector<int> pixelsOfOneRowOfImage;				// one row of image is image width amount of pixels

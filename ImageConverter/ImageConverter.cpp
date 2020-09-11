@@ -32,8 +32,8 @@ int main()
 
 		/*	 COMPRESSION	*/
 		CompressionHelper compressionHelper = CompressionHelper();
-		//compressionHelper.initializeSettingsForCompression(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.bitmap.pixelData);
-		//compressionHelper.startCompression();
+		compressionHelper.initializeSettingsForCompression(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.bitmap.pixelData);
+		compressionHelper.startCompression();
 
 		/*	 SAVING		*/
 		bitmapHelper.writeBitmap(outputFileName);
