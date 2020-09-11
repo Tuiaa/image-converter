@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 /*
  *		Bitmap File Header
@@ -59,4 +60,6 @@ public:
 	
 	// Array containing all the pixels from image
 	unsigned char* pixelData;
+
+	std::vector<int> RGBPixelData;
 };

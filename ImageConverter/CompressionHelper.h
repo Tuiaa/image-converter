@@ -28,6 +28,9 @@ private:
 	int currentRowFromChunk = 0;
 	int currentChunk = 0;
 	int currentPixelNumPosition = 0;
+	int actualAmountOfChunksPopulated = 0;
+
+	int sliceImageIntoOneChunkRowCalledThisManyTimes = 0;
 
 	std::vector<int> pixelsNeededForOneRowOfChunks;		// one row of chunks is 4 * image width pixels
 	std::vector<int> pixelsOfOneRowOfImage;				// one row of image is image width amount of pixels
@@ -35,10 +38,16 @@ private:
 	std::vector<PixelChunk> allChunks;
 	unsigned char* allPixelsFromImage;
 	std::vector<int> pixelDataArray;
+	std::vector<int> earlierPixelDataArray;
+	std::vector<int> allPixelsFromImageVector;
 
 	/*	Initialization functions	*/
 	void initializeVectorOfChunks();
 	std::vector<PixelInfo> initializeArrayOfPixelColorValues();
+
+
+
+	void InitializePixelDataArray();
 
 	/*	Helper functions  */
 	int calculateHowManyChunksAreNeeded(int width, int height);
@@ -47,7 +56,7 @@ private:
 	int getCurrentChunkStartingPixelPosition();
 
 
-	void sliceImageIntoOneChunkRow(int startingPoint);
+	void sliceImageIntoOneChunkRow(int amountOfChunksPopulated, int startingPoint);
 	void sliceImageIntoChunks();
 
 	void combineChunksBackToPixelArray();

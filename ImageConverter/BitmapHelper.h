@@ -6,7 +6,7 @@ class BitmapHelper {
 private:
 	int totalSize;
 
-	void saveBitmapValues(int width, int height, int bytesPerPixel, unsigned char *pixelData);
+	void saveBitmapValues(int width, int height, int bytesPerPixel, unsigned char* pixelData);
 public:
 	Bitmap bitmap;
 

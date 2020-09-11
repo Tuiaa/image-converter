@@ -24,19 +24,22 @@ int main()
 	if (!inputtedFileNameString.empty()) {
 		BitmapHelper bitmapHelper = BitmapHelper();
 		DDSHelper ddsHelper = DDSHelper();
-		inputtedFileName = "test-bmp-file.bmp";
+		inputtedFileName = "bitmapTestImage.bmp";
 		outputFileName = "test-bmp-file-compressed.bmp";
 
+		std::cout << "\n\ngoing into reading bitmap stuff";
 		/*	 READING	*/
 		bitmapHelper.readBitmapImageFromFile(inputtedFileName);
 
+		std::cout << "\n\ngoing into compression stuff";
 		/*	 COMPRESSION	*/
 		CompressionHelper compressionHelper = CompressionHelper();
 		compressionHelper.initializeSettingsForCompression(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.bitmap.pixelData);
 		std::vector<int> compressedPixels = compressionHelper.startCompression();
 
+		std::cout << "\n\ngoing into saving stuff";
 		/*	 SAVING		*/
-		bitmapHelper.writeBitmap(outputFileName, compressedPixels);
+		bitmapHelper.writeBitmap(outputFileName, bitmapHelper.bitmap.RGBPixelData);
 
 		// TODO: save bitmap values in dds helper --> try to create a dds file from bitmap data
 

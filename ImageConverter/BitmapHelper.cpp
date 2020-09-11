@@ -2,6 +2,7 @@
 #include "BitmapHelper.h"
 #include <iostream>
 #include <vector>
+#include <sstream>
 
 // Offsets gotten from BMP table
 #define DATA_OFFSET_OFFSET		0x000A
@@ -64,7 +65,7 @@ void BitmapHelper::readBitmapImageFromFile(const char *fileName)
  *		Save Bitmap Values
  *		- takes the read values and saves them in the created bitmap object
  */
-void BitmapHelper::saveBitmapValues(int width, int height, int bytesPerPixel, unsigned char *pixelDataFromFile) {
+void BitmapHelper::saveBitmapValues(int width, int height, int bytesPerPixel, unsigned char* pixelDataFromFile) {
 
 	bitmap = Bitmap();
 
@@ -87,6 +88,12 @@ void BitmapHelper::saveBitmapValues(int width, int height, int bytesPerPixel, un
 	// General
 	bitmap.bytesPerPixel = bytesPerPixel;
 	bitmap.pixelData = pixelDataFromFile;
+
+	for (int i = 0; i < totalSize; i++) {
+		bitmap.RGBPixelData.push_back(pixelDataFromFile[i]);
+	}
+
+	std::cout << "\nbitmap alues saved";
 }
 
 /*
@@ -117,16 +124,17 @@ void BitmapHelper::writeBitmap(const char *fileName, std::vector<int> compressed
 	fwrite(&bitmap.dibHeader.colorsUsedInColorPalette, 4, 1, outputFile);
 	fwrite(&bitmap.dibHeader.importantColors, 4, 1, outputFile);
 
-	std::vector<float> asd;
+	/*std::vector<float> asd;
 	int* p_ints = &(compressedPixels[0]);
 	int a;
 
-	byte* p_bytes = reinterpret_cast<byte*>(p_ints);
+	byte* p_bytes = reinterpret_cast<byte*>(p_ints);*/
 
 	// Add the pixel data
 	for (int i = 0; i < totalSize; i++)
 	{
-		fwrite(&p_bytes[i], 1, 1, outputFile);
+		//fwrite(&p_bytes[i], 1, 1, outputFile);
+		fwrite(&compressedPixels[i], 1, 1, outputFile);
 	}
 
 	fclose(outputFile);
