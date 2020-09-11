@@ -9,11 +9,11 @@
 #define BITS_PER_PIXEL_OFFSET	0x001C
 
 // Default values gotten from BMP table
-#define HEADER_SIZE				14
-#define INFO_HEADER_SIZE		40
-#define NO_COMPRESION			0
-#define MAX_NUMBER_OF_COLORS	0
-#define ALL_COLORS_REQUIRED		0
+#define HEADER_SIZE	14
+#define INFO_HEADER_SIZE 40
+#define NO_COMPRESION 0
+#define MAX_NUMBER_OF_COLORS 0
+#define ALL_COLORS_REQUIRED 0
 
 /*
  *		Read Bitmap Imge From File

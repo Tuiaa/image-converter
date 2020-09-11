@@ -24,9 +24,11 @@ int main()
 	if (!inputtedFileNameString.empty()) {
 		BitmapHelper bitmapHelper = BitmapHelper();
 		DDSHelper ddsHelper = DDSHelper();
+		inputtedFileName = "test-bmp-file.bmp";
+		outputFileName = "test-bmp-file-compressed.bmp";
 
 		/*	 READING	*/
-		//bitmapHelper.readBitmapImageFromFile(inputtedFileName);
+		bitmapHelper.readBitmapImageFromFile(inputtedFileName);
 
 		/*	 COMPRESSION	*/
 		CompressionHelper compressionHelper = CompressionHelper();
@@ -34,7 +36,9 @@ int main()
 		//compressionHelper.startCompression();
 
 		/*	 SAVING		*/
-		//bitmapHelper.writeBitmap(outputFileName);
+		bitmapHelper.writeBitmap(outputFileName);
+
+		// TODO: save bitmap values in dds helper --> try to create a dds file from bitmap data
 
 		ddsHelper.readDDSImageFromFile("test-dxt1-dds-file.dds");
 		//ddsHelper.saveDDSValues(400, 120, bitmapHelper.bitmap.pixelData);
