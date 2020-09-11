@@ -1,5 +1,6 @@
 #pragma once
 #include "Bitmap.h"
+#include <vector>
 
 class BitmapHelper {
 private:
@@ -10,5 +11,5 @@ public:
 	Bitmap bitmap;
 
 	void readBitmapImageFromFile(const char *fileName);
-	void writeBitmap(const char *fileName);
+	void writeBitmap(const char *fileName, std::vector<int> compressedPixels);
 };

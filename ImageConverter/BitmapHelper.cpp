@@ -1,6 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "BitmapHelper.h"
 #include <iostream>
+#include <vector>
 
 // Offsets gotten from BMP table
 #define DATA_OFFSET_OFFSET		0x000A
@@ -14,6 +15,8 @@
 #define NO_COMPRESION 0
 #define MAX_NUMBER_OF_COLORS 0
 #define ALL_COLORS_REQUIRED 0
+
+typedef unsigned char byte;
 
 /*
  *		Read Bitmap Imge From File
@@ -90,7 +93,7 @@ void BitmapHelper::saveBitmapValues(int width, int height, int bytesPerPixel, un
  *		Write Bitmap
 ¨*		- creates a new bitmap file
  */
-void BitmapHelper::writeBitmap(const char *fileName)
+void BitmapHelper::writeBitmap(const char *fileName, std::vector<int> compressedPixels)
 {
 	FILE *outputFile = fopen(fileName, "wb");
 
@@ -114,10 +117,16 @@ void BitmapHelper::writeBitmap(const char *fileName)
 	fwrite(&bitmap.dibHeader.colorsUsedInColorPalette, 4, 1, outputFile);
 	fwrite(&bitmap.dibHeader.importantColors, 4, 1, outputFile);
 
+	std::vector<float> asd;
+	int* p_ints = &(compressedPixels[0]);
+	int a;
+
+	byte* p_bytes = reinterpret_cast<byte*>(p_ints);
+
 	// Add the pixel data
 	for (int i = 0; i < totalSize; i++)
 	{
-		fwrite(&bitmap.pixelData[i], 1, 1, outputFile);
+		fwrite(&p_bytes[i], 1, 1, outputFile);
 	}
 
 	fclose(outputFile);

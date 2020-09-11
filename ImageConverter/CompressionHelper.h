@@ -1,8 +1,14 @@
 #pragma once
 #include <vector>
 
+struct PixelInfo {
+	int colorValueOfPixel;
+	int pixelPositionInArray;
+};
+
 struct PixelChunk {
-	std::vector<int> colorValueOfPixel;
+	std::vector<PixelInfo> pixelInfo;
+	//int pixelPositionInArray;
 };
 
 class CompressionHelper {
@@ -28,10 +34,11 @@ private:
 
 	std::vector<PixelChunk> allChunks;
 	unsigned char* allPixelsFromImage;
+	std::vector<int> pixelDataArray;
 
 	/*	Initialization functions	*/
 	void initializeVectorOfChunks();
-	std::vector<int> initializeArrayOfPixelColorValues();
+	std::vector<PixelInfo> initializeArrayOfPixelColorValues();
 
 	/*	Helper functions  */
 	int calculateHowManyChunksAreNeeded(int width, int height);
@@ -43,7 +50,9 @@ private:
 	void sliceImageIntoOneChunkRow(int startingPoint);
 	void sliceImageIntoChunks();
 
+	void combineChunksBackToPixelArray();
+
 public:
 	void initializeSettingsForCompression(int imageWidth, int imageHeight, unsigned char* pixelsFromImage);
-	void startCompression();
+	std::vector<int> startCompression();
 };

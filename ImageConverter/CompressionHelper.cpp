@@ -45,10 +45,10 @@ int CompressionHelper::calculateHowManyChunksAreNeeded(int width, int height) {
 void CompressionHelper::initializeVectorOfChunks() {
 
 	for (int i = 0; i < totalAmountOfChunks; i++) {
-		std::vector<int> chunkOfPixels = initializeArrayOfPixelColorValues();
-
+		//std::vector<int> chunkOfPixels = initializeArrayOfPixelColorValues();
 		PixelChunk tempPixelChunk;
-		tempPixelChunk.colorValueOfPixel = chunkOfPixels;
+		std::vector<PixelInfo> pixelInfo = initializeArrayOfPixelColorValues();
+		tempPixelChunk.pixelInfo = pixelInfo;
 
 		allChunks.push_back(tempPixelChunk);
 	}
@@ -58,14 +58,19 @@ void CompressionHelper::initializeVectorOfChunks() {
  *		Initialize Vector Of PixelData
  *		- initializes the pixel data (basically color value) stored inside a chunk
  */
-std::vector<int> CompressionHelper::initializeArrayOfPixelColorValues() {
+std::vector<PixelInfo> CompressionHelper::initializeArrayOfPixelColorValues() {
 
-	std::vector<int> colorValuesOfPixel;
+	std::vector<PixelInfo> pixelInfoVector;
+
 	for (int i = 0; i < pixelsInOneChunk; i++) {
-		colorValuesOfPixel.push_back(0);
+		PixelInfo pixelInfo;
+		pixelInfo.colorValueOfPixel = 0;
+		pixelInfo.pixelPositionInArray = 0;
+		pixelInfoVector.push_back(pixelInfo);
+		//colorValuesOfPixel.push_back(0);
 	}
 
-	return colorValuesOfPixel;
+	return pixelInfoVector;
 }
 
 /*
@@ -74,10 +79,16 @@ std::vector<int> CompressionHelper::initializeArrayOfPixelColorValues() {
  *		- DXT1 (BC1) block compression uses 4x4 pixel blocks (chunks)
  *		  and compresses their color data 
  */
-void CompressionHelper::startCompression() {
+std::vector<int> CompressionHelper::startCompression() {
 	sliceImageIntoChunks();
 
 	std::cout << "jee image sliced!";
+
+	combineChunksBackToPixelArray();
+	std::cout << "jee image put back together!";
+
+	return pixelDataArray;
+
 	// TODO calculate min and max color values of one chunk (and also two intermediate colors)
 	// TODO apply the calculated colors into the chunk and repeat process for all chunks
 	// TODO take all chunks and put them back to the uncharted char array of pixels
@@ -149,7 +160,10 @@ void CompressionHelper::sliceImageIntoOneChunkRow(int startingPixel) {
 		for (int chunk = startingPixel; chunk < currentRowLastPixelPosition; chunk++) {
 			for (int pixelPosition = currentChunkStartingPixelPosition; pixelPosition < maxPixelPositionOnChunk; pixelPosition++) {
 
-				allChunks[chunk].colorValueOfPixel[pixelPosition] = (int)allPixelsFromImage[currentPixelNumPosition];
+				allChunks[chunk].pixelInfo[pixelPosition].colorValueOfPixel = (int)allPixelsFromImage[currentPixelNumPosition];
+				//allChunks[chunk].colorValueOfPixel[pixelPosition] = (int)allPixelsFromImage[currentPixelNumPosition];
+				allChunks[chunk].pixelInfo[pixelPosition].pixelPositionInArray = currentPixelNumPosition;
+				//allChunks[chunk].pixelPositionInArray = currentPixelNumPosition;
 				currentPixelNumPosition++;
 			}
 
@@ -186,4 +200,16 @@ int CompressionHelper::getCurrentChunkStartingPixelPosition() {
 	}
 
 	return currentPixelFromChunk;
+}
+
+void CompressionHelper::combineChunksBackToPixelArray() {
+
+	pixelDataArray = std::vector<int>(currentPixelNumPosition + 1);
+	
+	for (int i = 0; i < totalAmountOfChunks; i++) {
+		for (int j = 0; j < pixelsInOneChunk; j++) {
+			auto pixelPos = pixelDataArray.begin() + allChunks[i].pixelInfo[j].pixelPositionInArray;
+			pixelDataArray.insert(pixelPos, allChunks[i].pixelInfo[j].colorValueOfPixel);
+		}
+	}
 }
