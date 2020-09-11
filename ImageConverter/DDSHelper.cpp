@@ -138,11 +138,28 @@ void DDSHelper::readDDSImageFromFile(const char *fileName)
 	//fseek(f, 0, SEEK_SET);
 	fread(readHeader, 1, 124, f);
 
-	// reads rest of the file
-	int sizewithoutstart = totalSize - 128;
-	readFullFileExceptHeaderAndMagic = new unsigned char[sizewithoutstart];
+	// reads second header
+	readHeader10 = new unsigned char[20];
+	//fseek(f, 0, SEEK_SET);
+	fread(readHeader10, 1, 20, f);
+
+	int sizewithoutstart = totalSize - 128 - 20;
+	int imageSize = 131072;		// DXT1 compressed images have 4 bitsPerPixel --> 4 * imagewidth *imageheight
+	int endSettingsSize = sizewithoutstart - imageSize;
+
+	// reads image pixel data
+	imagePixelDataMaybe = new unsigned char[imageSize];
+	//fseek(f, 0, SEEK_SET);
+	fread(imagePixelDataMaybe, 1, imageSize, f);
+
+	// reads end settings
+	endSettingsData = new unsigned char[endSettingsSize];
+	//fseek(f, 0, SEEK_SET);
+	fread(endSettingsData, 1, endSettingsSize, f);
+
+	//readImagePixelDataAndEndSettings = new unsigned char[sizewithoutstart];
 	//fseek(f, 127, SEEK_SET);
-	fread(readFullFileExceptHeaderAndMagic, 1, sizewithoutstart, f);
+	//fread(readImagePixelDataAndEndSettings, 1, sizewithoutstart, f);
 
 	//readFullFileExceptHeaderAndMagic = new unsigned char[totalSize - 128];
 	//fread(readFullFileExceptHeaderAndMagic, 1, totalSize, f);
@@ -265,7 +282,7 @@ void DDSHelper::saveDDSValues(int width, int height, unsigned char *pixelDataFro
 	dds.bdata = pixelDataFromFile;
 }
 
-void DDSHelper::writeDDSFile(const char *fileName)
+void DDSHelper::writeDDSFile(const char *fileName, unsigned char* pixelDataFromBitmap)
 {
 	FILE *outputFile = fopen(fileName, "wb");
 
@@ -277,8 +294,22 @@ void DDSHelper::writeDDSFile(const char *fileName)
 	//fwrite(&bitmap.bitmapFileHeader.BM[1], 1, 1, outputFile);
 	fwrite(magicValue, 4, 1, outputFile);
 	fwrite(readHeader, 124, 1, outputFile);
-	long size = totalSize - 128;
-	fwrite(readFullFileExceptHeaderAndMagic, size, 1, outputFile);
+	fwrite(readHeader10, 20, 1, outputFile);
+
+	// reads rest of the file
+	int sizewithoutstart = totalSize - 128 - 20;
+	int imageSize = 131072;
+	int endSettingsSize = sizewithoutstart - imageSize;
+
+	//long size = totalSize - 128 - 20;
+	fwrite(imagePixelDataMaybe, imageSize, 1, outputFile);
+
+	// reads rest of the file
+	/*int sizewithoutstart = totalSize - 128 - 20;
+	int imageSize = 262144;
+	int endSettingsSize = sizewithoutstart - imageSize;*/
+
+	fwrite(endSettingsData, endSettingsSize, 1, outputFile);
 	//fwrite(readHeader10, 32, 1, outputFile);
 
 	// Add the pixel data

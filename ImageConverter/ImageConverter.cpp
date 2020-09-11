@@ -42,7 +42,7 @@ int main()
 
 		ddsHelper.readDDSImageFromFile("test-dxt1-dds-file.dds");
 		//ddsHelper.saveDDSValues(400, 120, bitmapHelper.bitmap.pixelData);
-		ddsHelper.writeDDSFile("new-test-dxt1-dds-file.dds");
+		ddsHelper.writeDDSFile("new-test-dxt1-dds-file.dds", bitmapHelper.bitmap.pixelData);
 	}
 	else {
 		std::cout << "Filename was not supported, please restart the app and try again!";
