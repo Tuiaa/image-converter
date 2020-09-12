@@ -43,7 +43,6 @@ int main()
 
 		// TODO: save bitmap values in dds helper --> try to create a dds file from bitmap data
 
-		//ddsHelper.readDDSImageFromFile("test-dxt1-dds-file.dds");
 		ddsHelper.readDDSFileFromImageLonger("test-dxt1-dds-file.dds");
 		//ddsHelper.saveDDSValues(400, 120, bitmapHelper.bitmap.pixelData);
 		ddsHelper.writeDDSFile("new-test-dxt1-dds-file.dds", bitmapHelper.bitmap.pixelData, compressedPixels);
