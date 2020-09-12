@@ -6,42 +6,22 @@
 #include <vector>
 
 // DDS Header Flags
+#define DDS_MAGIC 0x20534444							// "DDS "
+#define PIXELFORMAT_DXT1 68888449
+#define DDS_HEADER_DWSIZE 124									// DDS header size is always 124
+#define DDSD_CAPS						0x00000001		// Required in every .dds file
+#define DDSD_HEIGHT						0x00000002		// Required in every .dds file
+#define DDSD_WIDTH						0x00000004		// Required in every .dds file
+#define DDSD_PIXELFORMAT				0x00001000		// Required in every .dds file
+#define DDSD_LINEARSIZE					0x00080000		// required when pitch is provided for compressed texture
 
-#define DDS_MAGIC 0x20534444 // "DDS "
-/* When you write .dds files, you should set the DDSD_CAPS and DDSD_PIXELFORMAT flags,
-and for mipmapped textures you should also set the DDSD_MIPMAPCOUNT flag. However, when you
-read a .dds file, you should not rely on the DDSD_CAPS, DDSD_PIXELFORMAT, and DDSD_MIPMAPCOUNT
-flags being set because some writers of such a file might not set these flags. */
-#define DWSIZE = 124;
+#define DDSCAPS_TEXTURE					0x00001000		// DDS_HEADER documentary says this is required
 
-#define DDSD_CAPS						0x00000001		// required
-#define DDSD_HEIGHT						0x00000002		// required
-#define DDSD_WIDTH						0x00000004		// required
-#define DDSD_PITCH						0x00000008
-#define DDSD_PIXELFORMAT				0x00001000		// required
-#define DDSD_MIPMAPCOUNT				0x00020000
-#define DDSD_LINEARSIZE					0x00080000
-#define DDSD_DEPTH						0x00800000
+#define DDS_PIXELFORMAT_DWSIZE 32
+#define DDS_PIXELFORMAT_DWRGBBITCOUNT 16
+#define DDPF_FOURCC						0x00000004		// tells that image contains compressed RGB data
 
 
-#define DDS_HEADER_FLAGS_TEXTURE        0x00001007  // DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT
-#define DDS_HEADER_FLAGS_MIPMAP         0x00020000  // DDSD_MIPMAPCOUNT
-#define DDS_HEADER_FLAGS_VOLUME         0x00800000  // DDSD_DEPTH
-#define DDS_HEADER_FLAGS_PITCH          0x00000008  // DDSD_PITCH
-#define DDS_HEADER_FLAGS_LINEARSIZE     0x00080000  // DDSD_LINEARSIZE
-
-#define DDPF_ALPHAPIXELS				0x00000001
-#define DDPF_ALPHA						0x00000002
-#define DDPF_FOURCC						0x00000004
-#define DDPF_INDEXED					0x00000020
-#define DDPF_RGB						0x00000040
-#define DDPF_YUV						0x00000200
-#define DDPF_LUMINANCE					0x00020000
-#define DDPF_BUMPDUDV					0x00080000
-
-#define DDSCAPS_TEXTURE					0x00001000
-
-#define SIZE_T_BITSPERPIXEL = 4;	// DXGI_FORMAT_BC1_TYPELESS format size is 4
 
 void DDSHelper::readDDSFileFromImageLonger(const char* fileName) {
 
@@ -146,7 +126,7 @@ void DDSHelper::saveDDSDefaultValues() {
 	dds.dwMagic = DDS_MAGIC;
 
 	// Adding DDS_HEADER default values
-	dds.header.dwSize = 124;
+	dds.header.dwSize = DDS_HEADER_DWSIZE;
 	dds.header.dwFlags = (DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT);
 	int width2 = dds.header.dwWidth;
 	int height2 = dds.header.dwHeight;
@@ -159,9 +139,12 @@ void DDSHelper::saveDDSDefaultValues() {
 	}
 
 	// Adding DDS_PIXELFORMAT default values
-	dds.header.ddspf.dwSize = 32;
+	dds.header.ddspf.dwSize = DDS_PIXELFORMAT_DWSIZE;
 	dds.header.ddspf.dwFlags = (DDPF_FOURCC);
-	dds.header.ddspf.dwRGBBitCount = 16;
+
+	// WHY THIS IS NOT WORKING? Why read value from image is 827611204? DXT1 should be 68888449
+	dds.header.ddspf.dwFourCC = 827611204;
+	dds.header.ddspf.dwRGBBitCount = DDS_PIXELFORMAT_DWRGBBITCOUNT;
 	dds.header.ddspf.dwRBitMask = 0x00ff0000;
 	dds.header.ddspf.dwGBitMask = 0x0000ff00;
 	dds.header.ddspf.dwBBitMask = 0x000000ff;
