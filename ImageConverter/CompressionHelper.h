@@ -65,6 +65,9 @@ private:
 
 	void combineChunksBackToPixelArray();
 
+
+	void goThroughPixelDataAndCompress();
+
 public:
 	void initializeSettingsForCompression(int imageWidth, int imageHeight, std::vector<int> allPixelsFromBitmapVector, unsigned char* pixelsFromImage);
 	std::vector<int> startCompression();

@@ -12,9 +12,9 @@ typedef enum D3D10_RESOURCE_DIMENSION {
 };
 
 // typedef commonly used with DDS files
-typedef unsigned long DWORD;
+typedef unsigned long DWORD;		// 4 bytes
 
-typedef unsigned int UINT;
+typedef unsigned int UINT;			// 4 bytes
 
 /*
  *		DDS Pixel Format

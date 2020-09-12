@@ -13,7 +13,7 @@
 // Default values gotten from BMP table
 #define HEADER_SIZE	14
 #define INFO_HEADER_SIZE 40
-#define NO_COMPRESION 0
+#define NO_COMPRESSION 0
 #define MAX_NUMBER_OF_COLORS 0
 #define ALL_COLORS_REQUIRED 0
 
@@ -55,7 +55,7 @@ void BitmapHelper::readBitmapImageFromFile(const char *fileName)
 	unsigned char* tempPixelArray = new unsigned char[totalSize];
 	fseek(imageFile, dataOffset, SEEK_SET);
 	fread(tempPixelArray, sizeof(unsigned char), totalSize, imageFile);
-
+	std::cout << "size of unsigned char: " << sizeof(unsigned char);
 	fclose(imageFile);
 
 	saveBitmapValues(width, height, bytesPerPixel, tempPixelArray);
@@ -78,7 +78,7 @@ void BitmapHelper::saveBitmapValues(int width, int height, int bytesPerPixel, un
 	bitmap.dibHeader.width = width;
 	bitmap.dibHeader.height = height;
 	bitmap.dibHeader.bitsPerPixel = bytesPerPixel * 8;
-	bitmap.dibHeader.compression = NO_COMPRESION;
+	bitmap.dibHeader.compression = NO_COMPRESSION;
 	bitmap.dibHeader.imageSize = width * height * bytesPerPixel;
 	bitmap.dibHeader.horizontalResolution = 11811;						//300 dpi
 	bitmap.dibHeader.verticalResolution = 11811;						//300 dpi

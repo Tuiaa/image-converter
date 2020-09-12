@@ -1,7 +1,9 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "DDS.h"
 #include "DDSHelper.h"
+#include <iostream>
 #include <algorithm>
+#include <vector>
 
 // DDS Header Flags
 
@@ -105,7 +107,7 @@ void DDSHelper::readDDSImageFromFile(const char *fileName)
 	//FILE *imageFile = fopen(fileName, "rb");				// Opens the image file
 
 		// lay out variables to be used
-	
+
 
 	unsigned int width;
 	unsigned int height;
@@ -131,7 +133,15 @@ void DDSHelper::readDDSImageFromFile(const char *fileName)
 	totalSize = file_size;
 
 	magicValue = new unsigned char[4];
-	fread(magicValue, 1, 4, f);
+	fread(&dds.dwMagic, 1, 4, f);
+
+	//readHeaderUntilReserved = new unsigned char[32];
+	////fseek(f, 0, SEEK_SET);
+	//fread(readHeaderUntilReserved, 1, 32, f);
+
+	//readHeaderAfterReserved = new unsigned char[92];
+	////fseek(f, 0, SEEK_SET);
+	//fread(readHeaderAfterReserved, 1, 92, f);
 
 	// reads file header
 	readHeader = new unsigned char[124];
@@ -245,9 +255,93 @@ exit:
 	fclose(f);
 	//return tid;
 
+	for (int i = 0; i < imageSize; i++) {
+		imagePixelDataMaybeVector.push_back(imagePixelDataMaybe[i]);
+	}
+
 	saveDDSValues(width, height, pixelData);
 
 }
+
+
+void DDSHelper::readDDSFileFromImageLonger(const char* fileName) {
+
+	//GLuint tid = 0;
+	dds = DDS();
+	// open the DDS file for binary reading and get file size
+	FILE* f = fopen(fileName, "rb");
+
+	fseek(f, 0, SEEK_END);
+	long file_size = ftell(f);
+	fseek(f, 0, SEEK_SET);
+
+	totalSize = file_size;
+
+	//read magic value
+	fread(&dds.dwMagic, 1, 4, f);
+
+	// read header
+	fread(&dds.header.dwSize, 1, 4, f);
+	fread(&dds.header.dwFlags, 1, 4, f);
+	fread(&dds.header.dwHeight, 1, 4, f);
+	fread(&dds.header.dwWidth, 1, 4, f);
+	fread(&dds.header.dwPitchOrLinearSize, 1, 4, f);
+	fread(&dds.header.dwDepth, 1, 4, f);
+	fread(&dds.header.dwMipMapCount, 1, 4, f);
+	fread(&dds.header.dwReserved1, 1, 44, f);
+	// read pixel format
+	fread(&dds.header.ddspf.dwSize, 1, 4, f);
+	fread(&dds.header.ddspf.dwFlags, 1, 4, f);
+	fread(&dds.header.ddspf.dwFourCC, 1, 4, f);
+	fread(&dds.header.ddspf.dwRGBBitCount, 1, 4, f);
+	fread(&dds.header.ddspf.dwRBitMask, 1, 4, f);
+	fread(&dds.header.ddspf.dwGBitMask, 1, 4, f);
+	fread(&dds.header.ddspf.dwBBitMask, 1, 4, f);
+	fread(&dds.header.ddspf.dwABitMask, 1, 4, f);
+
+	////header continues
+	fread(&dds.header.dwCaps, 1, 4, f);
+	fread(&dds.header.dwCaps2, 1, 4, f);
+	fread(&dds.header.dwCaps3, 1, 4, f);
+	fread(&dds.header.dwCaps4, 1, 4, f);
+	fread(&dds.header.dwReserved2, 1, 4, f);
+
+
+
+
+
+
+	readHeader10 = new unsigned char[20];
+	//fseek(f, 0, SEEK_SET);
+	fread(readHeader10, 1, 20, f);
+
+	int sizewithoutstart = totalSize - 128 - 20;
+	int imageSize = 131072;		// DXT1 compressed images have 4 bitsPerPixel --> 4 * imagewidth *imageheight
+	int endSettingsSize = sizewithoutstart - imageSize;
+
+	// reads image pixel data
+	imagePixelDataMaybe = new unsigned char[imageSize];
+	//fseek(f, 0, SEEK_SET);
+	fread(imagePixelDataMaybe, 1, imageSize, f);
+
+	// reads end settings
+	endSettingsData = new unsigned char[endSettingsSize];
+	//fseek(f, 0, SEEK_SET);
+	fread(endSettingsData, 1, endSettingsSize, f);
+
+
+
+	fclose(f);
+	//return tid;
+
+	for (int i = 0; i < imageSize; i++) {
+		imagePixelDataMaybeVector.push_back(imagePixelDataMaybe[i]);
+	}
+
+	saveDDSValues(dds.header.dwWidth, dds.header.dwHeight, pixelData);
+}
+
+
 
 void DDSHelper::saveDDSValues(int width, int height, unsigned char *pixelDataFromFile) {
 
@@ -255,35 +349,46 @@ void DDSHelper::saveDDSValues(int width, int height, unsigned char *pixelDataFro
 
 	dds.dwMagic = DDS_MAGIC;
 
-	dds.header.dwSize = 124;
-	dds.header.dwFlags = (DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT);
-	dds.header.dwHeight = height;
-	dds.header.dwWidth = width;
-	unsigned long pitch = std::max(1, ((width + 3) / 4)) * 8;		// block size is 8 bytes for DXT1, BC1 formats
-	dds.header.dwPitchOrLinearSize = pitch;
+	dds.header.dwSize = 124;	// always the same
+	//dds.header.dwFlags = (DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT);
+	//// TODO lisää bitmapista
+	//dds.header.dwHeight = height;
+	//dds.header.dwWidth = width;
+	int width2 = dds.header.dwWidth;
+	//unsigned long pitch = std::max(1, ((width + 3) / 4)) * 8;		// block size is 8 bytes for DXT1, BC1 formats
+	//dds.header.dwPitchOrLinearSize = pitch;
 
-	// is this needed? dds.header.dwDepth = depth;	// deph of a volume texture (in pixels), otherwise unused
-	// mipmaps unused
-	// dwreserved, unused
-	DDS_PIXELFORMAT pixelFormat;
-	pixelFormat.dwSize = 32;		// structure size, is set to 32
-	pixelFormat.dwFlags = (DDPF_RGB | DDPF_LUMINANCE);
-	//pixelFormat.dwRBitMask = 0x00ff0000;
-	pixelFormat.dwRGBBitCount = 16;
-	pixelFormat.dwRBitMask = 0x00ff0000;
-	pixelFormat.dwGBitMask = 0x0000ff00;
-	pixelFormat.dwBBitMask = 0x000000ff;
+	//dds.header.dwDepth = 0;	// deph of a volume texture (in pixels), otherwise unused
+	//// mipmaps unused
+	//dds.header.dwMipMapCount = 0;
+	//// dwreserved, unused
+	//for (int i = 0; i < 11; i++) {
+	//	dds.header.dwReserved1[i] = 0;
+	//}
+	//DDS_PIXELFORMAT pixelFormat;
+	dds.header.ddspf.dwSize = 32;		// structure size, is set to 32
+	//pixelFormat.dwFlags = (DDPF_RGB | DDPF_LUMINANCE);
+	dds.header.ddspf.dwRGBBitCount = 16;
+	dds.header.ddspf.dwRBitMask = 0x00ff0000;
+	dds.header.ddspf.dwGBitMask = 0x0000ff00;
+	dds.header.ddspf.dwBBitMask = 0x000000ff;
+	dds.header.ddspf.dwABitMask = 0xff000000;
 
-	dds.header.ddspf = pixelFormat;
-	dds.header.dwCaps = DDSCAPS_TEXTURE;
+	//dds.header.ddspf = pixelFormat;
+	//dds.header.dwCaps = DDSCAPS_TEXTURE;
+	//dds.header.dwCaps2 = 0;
+	//dds.header.dwCaps3 = 0;
+	//dds.header.dwCaps4 = 0;
+	//dds.header.dwReserved2 = 0;
 
-	dds.header10.dxgiFormat = DXGI_FORMAT_BC1_UNORM;
-	dds.header10.resourceDimension = D3D10_RESOURCE_DIMENSION_TEXTURE2D;
-	dds.bdata = pixelDataFromFile;
+	//dds.header10.dxgiFormat = DXGI_FORMAT_BC1_UNORM;
+	//dds.header10.resourceDimension = D3D10_RESOURCE_DIMENSION_TEXTURE2D;
+	//dds.bdata = pixelDataFromFile;
 }
 
-void DDSHelper::writeDDSFile(const char *fileName, unsigned char* pixelDataFromBitmap)
+void DDSHelper::writeDDSFile(const char *fileName, unsigned char* pixelDataFromBitmap, std::vector<int> pixelDataAsVector)
 {
+
 	FILE *outputFile = fopen(fileName, "wb");
 
 	//int totalSize = 64 + 124 + 32;
@@ -292,8 +397,40 @@ void DDSHelper::writeDDSFile(const char *fileName, unsigned char* pixelDataFromB
 	//fwrite(&bitmap.bitmapFileHeader.BM[0], 1, 1, outputFile);
 	//fwrite(&dds.dwMagic, 4, 1, outputFile);								// length 4
 	//fwrite(&bitmap.bitmapFileHeader.BM[1], 1, 1, outputFile);
-	fwrite(magicValue, 4, 1, outputFile);
-	fwrite(readHeader, 124, 1, outputFile);
+	fwrite(&dds.dwMagic, 4, 1, outputFile);
+
+
+	// DDS Header
+	//fwrite(&bitmap.bitmapFileHeader.filesize, 4, 1, outputFile);
+	fwrite(&dds.header.dwSize, 4, 1, outputFile);
+	fwrite(&dds.header.dwFlags, 4, 1, outputFile);
+	fwrite(&dds.header.dwHeight, 4, 1, outputFile);
+	fwrite(&dds.header.dwWidth, 4, 1, outputFile);
+	fwrite(&dds.header.dwPitchOrLinearSize, 4, 1, outputFile);
+	fwrite(&dds.header.dwDepth, 4, 1, outputFile);
+	fwrite(&dds.header.dwMipMapCount, 4, 1, outputFile);
+	fwrite(&dds.header.dwReserved1, 44, 1, outputFile);
+	//pixelformat 32
+	//fwrite(&dds.header.ddspf, 32, 1, outputFile);
+	//pixelformat
+	fwrite(&dds.header.ddspf.dwSize, 4, 1, outputFile);
+	fwrite(&dds.header.ddspf.dwFlags, 4, 1, outputFile);
+	fwrite(&dds.header.ddspf.dwFourCC, 4, 1, outputFile);
+	fwrite(&dds.header.ddspf.dwRGBBitCount, 4, 1, outputFile);
+	fwrite(&dds.header.ddspf.dwRBitMask, 4, 1, outputFile);
+	fwrite(&dds.header.ddspf.dwGBitMask, 4, 1, outputFile);
+	fwrite(&dds.header.ddspf.dwBBitMask, 4, 1, outputFile);
+	fwrite(&dds.header.ddspf.dwABitMask, 4, 1, outputFile);
+
+	//header continues
+	fwrite(&dds.header.dwCaps, 4, 1, outputFile);
+	fwrite(&dds.header.dwCaps2, 4, 1, outputFile);
+	fwrite(&dds.header.dwCaps3, 4, 1, outputFile);
+	fwrite(&dds.header.dwCaps4, 4, 1, outputFile);
+	fwrite(&dds.header.dwReserved2, 4, 1, outputFile);
+
+
+	//fwrite(readHeader, 124, 1, outputFile);
 	fwrite(readHeader10, 20, 1, outputFile);
 
 	// reads rest of the file
@@ -303,6 +440,12 @@ void DDSHelper::writeDDSFile(const char *fileName, unsigned char* pixelDataFromB
 
 	//long size = totalSize - 128 - 20;
 	fwrite(imagePixelDataMaybe, imageSize, 1, outputFile);
+
+
+	/*for (int i = 0; i < imageSize; i++)
+	{
+		fwrite(&pixelDataAsVector[i], 1, 1, outputFile);
+	}*/
 
 	// reads rest of the file
 	/*int sizewithoutstart = totalSize - 128 - 20;

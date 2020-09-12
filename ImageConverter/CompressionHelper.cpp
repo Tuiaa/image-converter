@@ -90,12 +90,14 @@ std::vector<int> CompressionHelper::startCompression() {
 
 	std::cout << "\n\njee image sliced!";
 
-	combineChunksBackToPixelArray();
-	std::cout << "jee image put back together!";
+
 
 	// TODO calculate min and max color values of one chunk (and also two intermediate colors)
 	// TODO apply the calculated colors into the chunk and repeat process for all chunks
+	goThroughPixelDataAndCompress();
 	// TODO take all chunks and put them back to the uncharted char array of pixels
+	combineChunksBackToPixelArray();
+	std::cout << "jee image put back together!";
 
 	return pixelDataArray;
 }
@@ -271,4 +273,8 @@ void CompressionHelper::InitializePixelDataArray() {
 	for (int i = 0; i < totalPixelsAmount; i++) {
 		pixelDataArray.push_back(3);
 	}
+}
+
+void CompressionHelper::goThroughPixelDataAndCompress() {
+
 }
