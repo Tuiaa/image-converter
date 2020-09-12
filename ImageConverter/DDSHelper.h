@@ -8,7 +8,7 @@ public:
 	void getSurfaceInfo(size_t width, size_t height, size_t* outNumBytes, size_t* outRowBytes, size_t* outNumRows);
 	void readDDSImageFromFile(const char* fileName);
 	void readDDSFileFromImageLonger(const char* fileName);
-	void saveDDSValues(int width, int height, unsigned char *pixelDataFromFile);
+	void saveDDSDefaultValues();
 	void writeDDSFile(const char* fileName, unsigned char* pixelDataFromBitmap, std::vector<int> pixelDataAsVector);
 
 	long totalSize;

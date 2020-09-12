@@ -108,7 +108,7 @@ void DDSHelper::readDDSImageFromFile(const char *fileName)
 
 		// lay out variables to be used
 
-
+/*
 	unsigned int width;
 	unsigned int height;
 	//unsigned int mipMapCount;
@@ -251,7 +251,7 @@ void DDSHelper::readDDSImageFromFile(const char *fileName)
 	// easy macro to get out quick and uniform (minus like 15 lines of bulk)
 exit:
 	free(buffer);
-	free(header);*/
+	free(header);
 	fclose(f);
 	//return tid;
 
@@ -259,7 +259,7 @@ exit:
 		imagePixelDataMaybeVector.push_back(imagePixelDataMaybe[i]);
 	}
 
-	saveDDSValues(width, height, pixelData);
+	saveDDSDefaultValues();*/
 
 }
 
@@ -338,48 +338,40 @@ void DDSHelper::readDDSFileFromImageLonger(const char* fileName) {
 		imagePixelDataMaybeVector.push_back(imagePixelDataMaybe[i]);
 	}
 
-	saveDDSValues(dds.header.dwWidth, dds.header.dwHeight, pixelData);
+	saveDDSDefaultValues();
 }
 
 
 
-void DDSHelper::saveDDSValues(int width, int height, unsigned char *pixelDataFromFile) {
-
-	//dds = DDS();
+void DDSHelper::saveDDSDefaultValues() {
 
 	dds.dwMagic = DDS_MAGIC;
 
 	dds.header.dwSize = 124;	// always the same
-	//dds.header.dwFlags = (DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT);
-	//// TODO lis‰‰ bitmapista
-	//dds.header.dwHeight = height;
-	//dds.header.dwWidth = width;
+	dds.header.dwFlags = (DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT);
 	int width2 = dds.header.dwWidth;
-	//unsigned long pitch = std::max(1, ((width + 3) / 4)) * 8;		// block size is 8 bytes for DXT1, BC1 formats
-	//dds.header.dwPitchOrLinearSize = pitch;
+	unsigned long pitch = std::max(1, ((width2 + 3) / 4)) * 8;		// block size is 8 bytes for DXT1, BC1 formats
+	dds.header.dwPitchOrLinearSize = pitch;
 
-	//dds.header.dwDepth = 0;	// deph of a volume texture (in pixels), otherwise unused
-	//// mipmaps unused
-	//dds.header.dwMipMapCount = 0;
-	//// dwreserved, unused
-	//for (int i = 0; i < 11; i++) {
-	//	dds.header.dwReserved1[i] = 0;
-	//}
-	//DDS_PIXELFORMAT pixelFormat;
+	dds.header.dwDepth = 0;
+	dds.header.dwMipMapCount = 0;
+	for (int i = 0; i < 11; i++) {
+		dds.header.dwReserved1[i] = 0;
+	}
+
 	dds.header.ddspf.dwSize = 32;		// structure size, is set to 32
-	//pixelFormat.dwFlags = (DDPF_RGB | DDPF_LUMINANCE);
+	dds.header.ddspf.dwFlags = (DDPF_FOURCC);
 	dds.header.ddspf.dwRGBBitCount = 16;
 	dds.header.ddspf.dwRBitMask = 0x00ff0000;
 	dds.header.ddspf.dwGBitMask = 0x0000ff00;
 	dds.header.ddspf.dwBBitMask = 0x000000ff;
 	dds.header.ddspf.dwABitMask = 0xff000000;
 
-	//dds.header.ddspf = pixelFormat;
-	//dds.header.dwCaps = DDSCAPS_TEXTURE;
-	//dds.header.dwCaps2 = 0;
-	//dds.header.dwCaps3 = 0;
-	//dds.header.dwCaps4 = 0;
-	//dds.header.dwReserved2 = 0;
+	dds.header.dwCaps = DDSCAPS_TEXTURE;
+	dds.header.dwCaps2 = 0;
+	dds.header.dwCaps3 = 0;
+	dds.header.dwCaps4 = 0;
+	dds.header.dwReserved2 = 0;
 
 	//dds.header10.dxgiFormat = DXGI_FORMAT_BC1_UNORM;
 	//dds.header10.resourceDimension = D3D10_RESOURCE_DIMENSION_TEXTURE2D;
