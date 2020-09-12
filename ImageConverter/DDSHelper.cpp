@@ -322,7 +322,7 @@ void DDSHelper::readDDSFileFromImageLonger(const char* fileName) {
 
 	int sizewithoutstart = totalSize - 128 - 20;
 	int imageSize = 131072;		// DXT1 compressed images have 4 bitsPerPixel --> 4 * imagewidth *imageheight
-	int endSettingsSize = sizewithoutstart - imageSize;
+	endSettingsSize = sizewithoutstart - imageSize;
 
 	// reads image pixel data
 	imagePixelDataMaybe = new unsigned char[imageSize];
@@ -336,12 +336,22 @@ void DDSHelper::readDDSFileFromImageLonger(const char* fileName) {
 
 
 
+	readFullFile = new unsigned char[file_size];
+	fseek(f, 0, SEEK_SET);
+	fread(readFullFile, 1, file_size, f);
+
+
 	fclose(f);
 	//return tid;
 
 	for (int i = 0; i < imageSize; i++) {
 		imagePixelDataMaybeVector.push_back(imagePixelDataMaybe[i]);
 	}
+
+	for (int j = 0; j < file_size; j++) {
+		readFullFileVector.push_back(readFullFile[j]);
+	}
+
 
 	saveDDSDefaultValues();
 }
@@ -355,8 +365,10 @@ void DDSHelper::saveDDSDefaultValues() {
 	dds.header.dwSize = 124;	// always the same
 	dds.header.dwFlags = (DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT);
 	int width2 = dds.header.dwWidth;
-	unsigned long pitch = std::max(1, ((width2 + 3) / 4)) * 8;		// block size is 8 bytes for DXT1, BC1 formats
-	dds.header.dwPitchOrLinearSize = pitch;
+	int height2 = dds.header.dwHeight;
+	unsigned long pitchW = std::max(1, ((width2 + 3) / 4)) * 8;		// block size is 8 bytes for DXT1, BC1 formats
+	unsigned long pitchH = std::max(1, ((height2 + 3) / 4)) * 8;		// block size is 8 bytes for DXT1, BC1 formats
+	dds.header.dwPitchOrLinearSize = pitchW;
 
 	dds.header.dwDepth = 0;
 	dds.header.dwMipMapCount = 0;
@@ -384,6 +396,10 @@ void DDSHelper::saveDDSDefaultValues() {
 	dds.header10.miscFlag = 0;
 	dds.header10.arraySize = 0;
 	dds.header10.miscFlags2 = 0;
+
+	for (int j = 0; j < endSettingsSize; j++) {
+		endSettingsVector.push_back(0);
+	}
 
 	//dds.header10.dxgiFormat = DXGI_FORMAT_BC1_UNORM;
 	//dds.header10.resourceDimension = D3D10_RESOURCE_DIMENSION_TEXTURE2D;
@@ -450,20 +466,20 @@ void DDSHelper::writeDDSFile(const char *fileName, unsigned char* pixelDataFromB
 	int endSettingsSize = sizewithoutstart - imageSize;
 
 	//long size = totalSize - 128 - 20;
-	fwrite(imagePixelDataMaybe, imageSize, 1, outputFile);
+	//fwrite(imagePixelDataMaybe, imageSize, 1, outputFile);
 
 
-	/*for (int i = 0; i < imageSize; i++)
+	for (int i = 0; i < pixelDataAsVector.size(); i++)
 	{
 		fwrite(&pixelDataAsVector[i], 1, 1, outputFile);
-	}*/
+	}
 
 	// reads rest of the file
 	/*int sizewithoutstart = totalSize - 128 - 20;
 	int imageSize = 262144;
 	int endSettingsSize = sizewithoutstart - imageSize;*/
 
-	fwrite(endSettingsData, endSettingsSize, 1, outputFile);
+	fwrite(&endSettingsVector, endSettingsSize, 1, outputFile);
 	//fwrite(readHeader10, 32, 1, outputFile);
 
 	// Add the pixel data

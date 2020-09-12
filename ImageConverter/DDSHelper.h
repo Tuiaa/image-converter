@@ -31,4 +31,7 @@ public:
 	std::vector<int> readHeaderVector;
 	std::vector<int> readHeader10Vector;
 	std::vector<int> imagePixelDataMaybeVector;
+
+	int endSettingsSize;
+	std::vector<int> endSettingsVector;
 };
