@@ -146,7 +146,7 @@ void CompressionHelper::calculateAllPixelsNeededForRowOfChunks(int startingPoint
 	pixelsNeededForOneRowOfChunks.clear();
 	int length = amountOfPixelsInARowOfChunks * 3;
 	for (int i = startingPoint; i < length; i++) {
-		pixelsNeededForOneRowOfChunks.push_back(allPixelsFromImage[i]);
+		pixelsNeededForOneRowOfChunks.push_back(allPixelsFromImageVector[i]);
 	}
 }
 
@@ -190,32 +190,27 @@ void CompressionHelper::sliceImageIntoOneChunkRow(int amountOfChunksPopulated, i
 		int maxPixelPositionOnChunk = currentChunkStartingPixelPosition + chunkSize;
 		int currentRowLastPixelPosition = currentRowStartingPixelPosition + (lengthOfOneRowInPixels * 3);
 
-		int RGOrB = 0;
 		// Save the color value from image into chunk (currently uses temp data)
 		for (int chunk = currentRowStartingChunkPosition; chunk < currentRowLastChunkPosition; chunk++) {
 			for (int pixelPosition = currentChunkStartingPixelPosition; pixelPosition < maxPixelPositionOnChunk; pixelPosition++) {
 				
 				for (int i = 0; i < 3; i++) {
-					if (RGOrB == 0) {
+					if (i == 0) {
 						allChunks[chunk].pixelInfo[pixelPosition].colorValueOfPixelR = allPixelsFromImageVector[currentPixelNumPosition];
 						allChunks[chunk].pixelInfo[pixelPosition].pixelRPositionInArray = currentPixelNumPosition;
 						currentPixelNumPosition++;
-						RGOrB++;
 					}
-					else if (RGOrB == 1) {
+					else if (i == 1) {
 						allChunks[chunk].pixelInfo[pixelPosition].colorValueOfPixelG = allPixelsFromImageVector[currentPixelNumPosition];
 						allChunks[chunk].pixelInfo[pixelPosition].pixelGPositionInArray = currentPixelNumPosition;
 						currentPixelNumPosition++;
-						RGOrB++;
 					}
-					else if (RGOrB == 2) {
+					else if (i == 2) {
 						allChunks[chunk].pixelInfo[pixelPosition].colorValueOfPixelB = allPixelsFromImageVector[currentPixelNumPosition];
 						allChunks[chunk].pixelInfo[pixelPosition].pixelBPositionInArray = currentPixelNumPosition;
 						currentPixelNumPosition++;
-						RGOrB = 0;
 					}
 				}
-
 			}
 			currentChunk++;
 		}
