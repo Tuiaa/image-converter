@@ -306,14 +306,19 @@ void DDSHelper::readDDSFileFromImageLonger(const char* fileName) {
 	fread(&dds.header.dwCaps4, 1, 4, f);
 	fread(&dds.header.dwReserved2, 1, 4, f);
 
+	// header10 reading
+	fread(&dds.header10.dxgiFormat, 1, 4, f);
+	fread(&dds.header10.resourceDimension, 1, 4, f);
+	fread(&dds.header10.miscFlag, 1, 4, f);
+	fread(&dds.header10.arraySize, 1, 4, f);
+	fread(&dds.header10.miscFlags2, 1, 4, f);
 
 
 
 
-
-	readHeader10 = new unsigned char[20];
+	/*readHeader10 = new unsigned char[20];
 	//fseek(f, 0, SEEK_SET);
-	fread(readHeader10, 1, 20, f);
+	fread(readHeader10, 1, 20, f);*/
 
 	int sizewithoutstart = totalSize - 128 - 20;
 	int imageSize = 131072;		// DXT1 compressed images have 4 bitsPerPixel --> 4 * imagewidth *imageheight
@@ -373,6 +378,13 @@ void DDSHelper::saveDDSDefaultValues() {
 	dds.header.dwCaps4 = 0;
 	dds.header.dwReserved2 = 0;
 
+	// header10
+	dds.header10.dxgiFormat = DXGI_FORMAT_BC1_UNORM;
+	dds.header10.resourceDimension = D3D10_RESOURCE_DIMENSION_TEXTURE2D;
+	dds.header10.miscFlag = 0;
+	dds.header10.arraySize = 0;
+	dds.header10.miscFlags2 = 0;
+
 	//dds.header10.dxgiFormat = DXGI_FORMAT_BC1_UNORM;
 	//dds.header10.resourceDimension = D3D10_RESOURCE_DIMENSION_TEXTURE2D;
 	//dds.bdata = pixelDataFromFile;
@@ -421,9 +433,16 @@ void DDSHelper::writeDDSFile(const char *fileName, unsigned char* pixelDataFromB
 	fwrite(&dds.header.dwCaps4, 4, 1, outputFile);
 	fwrite(&dds.header.dwReserved2, 4, 1, outputFile);
 
+	// header10
+	fwrite(&dds.header10.dxgiFormat, 4, 1, outputFile);
+	fwrite(&dds.header10.resourceDimension, 4, 1, outputFile);
+	fwrite(&dds.header10.miscFlag, 4, 1, outputFile);
+	fwrite(&dds.header10.arraySize, 4, 1, outputFile);
+	fwrite(&dds.header10.miscFlags2, 4, 1, outputFile);
+
 
 	//fwrite(readHeader, 124, 1, outputFile);
-	fwrite(readHeader10, 20, 1, outputFile);
+	//fwrite(readHeader10, 20, 1, outputFile);
 
 	// reads rest of the file
 	int sizewithoutstart = totalSize - 128 - 20;
