@@ -24,7 +24,7 @@ int main()
 	if (!inputtedFileNameString.empty()) {
 		BitmapHelper bitmapHelper = BitmapHelper();
 		DDSHelper ddsHelper = DDSHelper();
-		inputtedFileName = "bitmapTestImage.bmp";
+		inputtedFileName = "test-bmp-file.bmp";
 		outputFileName = "test-bmp-file-compressed.bmp";
 
 		std::cout << "\n\ngoing into reading bitmap stuff";

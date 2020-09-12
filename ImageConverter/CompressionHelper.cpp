@@ -239,7 +239,7 @@ void CompressionHelper::sliceImageIntoOneChunkRow(int amountOfChunksPopulated, i
 				for (int i = 0; i < 3; i++) {
 					if (RGOrB == 0) {
 						//allChunks[chunk].pixelInfo[pixelPosition].colorValueOfPixel = (int)allPixelsFromImage[currentPixelNumPosition];
-						allChunks[chunk].pixelInfo[pixelPosition].colorValueOfPixelR = 255;
+						allChunks[chunk].pixelInfo[pixelPosition].colorValueOfPixelR = allPixelsFromImageVector[currentPixelNumPosition];
 						//allChunks[chunk].colorValueOfPixel[pixelPosition] = (int)allPixelsFromImage[currentPixelNumPosition];
 						allChunks[chunk].pixelInfo[pixelPosition].pixelRPositionInArray = currentPixelNumPosition;
 						//allChunks[chunk].pixelPositionInArray = currentPixelNumPosition;
@@ -251,7 +251,7 @@ void CompressionHelper::sliceImageIntoOneChunkRow(int amountOfChunksPopulated, i
 					}
 					else if (RGOrB == 1) {
 						//allChunks[chunk].pixelInfo[pixelPosition].colorValueOfPixel = (int)allPixelsFromImage[currentPixelNumPosition];
-						allChunks[chunk].pixelInfo[pixelPosition].colorValueOfPixelG = 255;
+						allChunks[chunk].pixelInfo[pixelPosition].colorValueOfPixelG = allPixelsFromImageVector[currentPixelNumPosition];
 						//allChunks[chunk].colorValueOfPixel[pixelPosition] = (int)allPixelsFromImage[currentPixelNumPosition];
 						allChunks[chunk].pixelInfo[pixelPosition].pixelGPositionInArray = currentPixelNumPosition;
 						//allChunks[chunk].pixelPositionInArray = currentPixelNumPosition;
@@ -260,7 +260,7 @@ void CompressionHelper::sliceImageIntoOneChunkRow(int amountOfChunksPopulated, i
 					}
 					else if (RGOrB == 2) {
 						//allChunks[chunk].pixelInfo[pixelPosition].colorValueOfPixel = (int)allPixelsFromImage[currentPixelNumPosition];
-						allChunks[chunk].pixelInfo[pixelPosition].colorValueOfPixelB = 255;
+						allChunks[chunk].pixelInfo[pixelPosition].colorValueOfPixelB = allPixelsFromImageVector[currentPixelNumPosition];
 						//allChunks[chunk].colorValueOfPixel[pixelPosition] = (int)allPixelsFromImage[currentPixelNumPosition];
 						allChunks[chunk].pixelInfo[pixelPosition].pixelBPositionInArray = currentPixelNumPosition;
 						//allChunks[chunk].pixelPositionInArray = currentPixelNumPosition;
@@ -344,7 +344,8 @@ void CompressionHelper::combineChunksBackToPixelArray() {
 }
 
 void CompressionHelper::InitializePixelDataArray() {
-	for (int i = 0; i < 144000; i++) {
+	int totalPixelsAmount = allPixelsFromImageVector.size();
+	for (int i = 0; i < totalPixelsAmount; i++) {
 		pixelDataArray.push_back(3);
 	}
 }
