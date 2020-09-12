@@ -2,8 +2,12 @@
 #include <vector>
 
 struct PixelInfo {
-	int colorValueOfPixel;
-	int pixelPositionInArray;
+	int colorValueOfPixelR;
+	int colorValueOfPixelG;
+	int colorValueOfPixelB;
+	int pixelRPositionInArray;
+	int pixelGPositionInArray;
+	int pixelBPositionInArray;
 };
 
 struct PixelChunk {
@@ -62,6 +66,6 @@ private:
 	void combineChunksBackToPixelArray();
 
 public:
-	void initializeSettingsForCompression(int imageWidth, int imageHeight, unsigned char* pixelsFromImage);
+	void initializeSettingsForCompression(int imageWidth, int imageHeight, std::vector<int> allPixelsFromBitmapVector, unsigned char* pixelsFromImage);
 	std::vector<int> startCompression();
 };

@@ -34,12 +34,12 @@ int main()
 		std::cout << "\n\ngoing into compression stuff";
 		/*	 COMPRESSION	*/
 		CompressionHelper compressionHelper = CompressionHelper();
-		compressionHelper.initializeSettingsForCompression(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.bitmap.pixelData);
+		compressionHelper.initializeSettingsForCompression(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height,bitmapHelper.bitmap.RGBPixelData, bitmapHelper.bitmap.pixelData);
 		std::vector<int> compressedPixels = compressionHelper.startCompression();
 
 		std::cout << "\n\ngoing into saving stuff";
 		/*	 SAVING		*/
-		bitmapHelper.writeBitmap(outputFileName, bitmapHelper.bitmap.RGBPixelData);
+		bitmapHelper.writeBitmap(outputFileName, compressedPixels);
 
 		// TODO: save bitmap values in dds helper --> try to create a dds file from bitmap data
 
