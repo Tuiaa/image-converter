@@ -5,27 +5,8 @@
 #include <algorithm>
 #include <vector>
 
-// DDS Header Flags
-#define DDS_MAGIC 0x20534444							// "DDS "
-#define PIXELFORMAT_DXT1 68888449
-#define DDS_HEADER_DWSIZE 124									// DDS header size is always 124
-#define DDSD_CAPS						0x00000001		// Required in every .dds file
-#define DDSD_HEIGHT						0x00000002		// Required in every .dds file
-#define DDSD_WIDTH						0x00000004		// Required in every .dds file
-#define DDSD_PIXELFORMAT				0x00001000		// Required in every .dds file
-#define DDSD_LINEARSIZE					0x00080000		// required when pitch is provided for compressed texture
-
-#define DDSCAPS_TEXTURE					0x00001000		// DDS_HEADER documentary says this is required
-
-#define DDS_PIXELFORMAT_DWSIZE 32
-#define DDS_PIXELFORMAT_DWRGBBITCOUNT 16
-#define DDPF_FOURCC						0x00000004		// tells that image contains compressed RGB data
-
-
-
 void DDSHelper::readDDSFileFromImageLonger(const char* fileName) {
 
-	//GLuint tid = 0;
 	dds = DDS();
 	// open the DDS file for binary reading and get file size
 	FILE* f = fopen(fileName, "rb");
@@ -49,14 +30,14 @@ void DDSHelper::readDDSFileFromImageLonger(const char* fileName) {
 	fread(&dds.header.dwMipMapCount, 1, 4, f);
 	fread(&dds.header.dwReserved1, 1, 44, f);
 	// read pixel format
-	fread(&dds.header.ddspf.dwSize, 1, 4, f);
-	fread(&dds.header.ddspf.dwFlags, 1, 4, f);
-	fread(&dds.header.ddspf.dwFourCC, 1, 4, f);
-	fread(&dds.header.ddspf.dwRGBBitCount, 1, 4, f);
-	fread(&dds.header.ddspf.dwRBitMask, 1, 4, f);
-	fread(&dds.header.ddspf.dwGBitMask, 1, 4, f);
-	fread(&dds.header.ddspf.dwBBitMask, 1, 4, f);
-	fread(&dds.header.ddspf.dwABitMask, 1, 4, f);
+	fread(&dds.header.pixelFormat.dwSize, 1, 4, f);
+	fread(&dds.header.pixelFormat.dwFlags, 1, 4, f);
+	fread(&dds.header.pixelFormat.dwFourCC, 1, 4, f);
+	fread(&dds.header.pixelFormat.dwRGBBitCount, 1, 4, f);
+	fread(&dds.header.pixelFormat.dwRBitMask, 1, 4, f);
+	fread(&dds.header.pixelFormat.dwGBitMask, 1, 4, f);
+	fread(&dds.header.pixelFormat.dwBBitMask, 1, 4, f);
+	fread(&dds.header.pixelFormat.dwABitMask, 1, 4, f);
 
 	////header continues
 	fread(&dds.header.dwCaps, 1, 4, f);
@@ -139,16 +120,16 @@ void DDSHelper::saveDDSDefaultValues() {
 	}
 
 	// Adding DDS_PIXELFORMAT default values
-	dds.header.ddspf.dwSize = DDS_PIXELFORMAT_DWSIZE;
-	dds.header.ddspf.dwFlags = (DDPF_FOURCC);
+	dds.header.pixelFormat.dwSize = DDS_PIXELFORMAT_DWSIZE;
+	dds.header.pixelFormat.dwFlags = (DDPF_FOURCC);
 
 	// WHY THIS IS NOT WORKING? Why read value from image is 827611204? DXT1 should be 68888449
-	dds.header.ddspf.dwFourCC = 827611204;
-	dds.header.ddspf.dwRGBBitCount = DDS_PIXELFORMAT_DWRGBBITCOUNT;
-	dds.header.ddspf.dwRBitMask = 0x00ff0000;
-	dds.header.ddspf.dwGBitMask = 0x0000ff00;
-	dds.header.ddspf.dwBBitMask = 0x000000ff;
-	dds.header.ddspf.dwABitMask = 0xff000000;
+	dds.header.pixelFormat.dwFourCC = 827611204;
+	dds.header.pixelFormat.dwRGBBitCount = DDS_PIXELFORMAT_DWRGBBITCOUNT;
+	dds.header.pixelFormat.dwRBitMask = 0x00ff0000;
+	dds.header.pixelFormat.dwGBitMask = 0x0000ff00;
+	dds.header.pixelFormat.dwBBitMask = 0x000000ff;
+	dds.header.pixelFormat.dwABitMask = 0xff000000;
 
 	// Continuing adding DDS_HEADER default values
 	dds.header.dwCaps = DDSCAPS_TEXTURE;
@@ -187,14 +168,14 @@ void DDSHelper::writeDDSFile(const char *fileName, unsigned char* pixelDataFromB
 	fwrite(&dds.header.dwReserved1, 44, 1, outputFile);
 
 	// Writing DDS_PIXELFORMAT that's inside the header
-	fwrite(&dds.header.ddspf.dwSize, 4, 1, outputFile);
-	fwrite(&dds.header.ddspf.dwFlags, 4, 1, outputFile);
-	fwrite(&dds.header.ddspf.dwFourCC, 4, 1, outputFile);
-	fwrite(&dds.header.ddspf.dwRGBBitCount, 4, 1, outputFile);
-	fwrite(&dds.header.ddspf.dwRBitMask, 4, 1, outputFile);
-	fwrite(&dds.header.ddspf.dwGBitMask, 4, 1, outputFile);
-	fwrite(&dds.header.ddspf.dwBBitMask, 4, 1, outputFile);
-	fwrite(&dds.header.ddspf.dwABitMask, 4, 1, outputFile);
+	fwrite(&dds.header.pixelFormat.dwSize, 4, 1, outputFile);
+	fwrite(&dds.header.pixelFormat.dwFlags, 4, 1, outputFile);
+	fwrite(&dds.header.pixelFormat.dwFourCC, 4, 1, outputFile);
+	fwrite(&dds.header.pixelFormat.dwRGBBitCount, 4, 1, outputFile);
+	fwrite(&dds.header.pixelFormat.dwRBitMask, 4, 1, outputFile);
+	fwrite(&dds.header.pixelFormat.dwGBitMask, 4, 1, outputFile);
+	fwrite(&dds.header.pixelFormat.dwBBitMask, 4, 1, outputFile);
+	fwrite(&dds.header.pixelFormat.dwABitMask, 4, 1, outputFile);
 
 	// Continuing writing DDS_HEADER
 	fwrite(&dds.header.dwCaps, 4, 1, outputFile);
