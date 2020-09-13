@@ -41,7 +41,7 @@ int main()
 		/*	 SAVING		*/
 		bitmapHelper.writeBitmap(outputFileName, compressedPixels);
 
-		ddsHelper.readDDSFileFromImageLonger("test-dxt1-dds-file.dds");
+		ddsHelper.readDDSImageFromFile("test-dxt1-dds-file.dds");
 		ddsHelper.writeDDSFile("new-test-dxt1-dds-file.dds", bitmapHelper.bitmap.pixelData, compressedPixels);
 	}
 	else {
