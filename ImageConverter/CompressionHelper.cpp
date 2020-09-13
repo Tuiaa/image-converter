@@ -1,7 +1,9 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "CompressionHelper.h"
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <sstream>
 
 /*
  *		Initialize Settings For Compression
@@ -9,6 +11,7 @@
  *		- amount of chunks the image should be sliced into can be calculated using that info
  */
 void CompressionHelper::initializeSettingsForCompression(int widthOfUsedImage, int heightOfUsedImage, std::vector<int> allPixelsFromBitmapVector, unsigned char* pixelsFromUsedImage) {
+	
 	chunkSize = 4;
 
 	totalAmountOfChunks = calculateHowManyChunksAreNeeded(widthOfUsedImage, heightOfUsedImage);
@@ -85,17 +88,10 @@ std::vector<PixelInfo> CompressionHelper::initializeArrayOfPixelColorValues() {
  */
 std::vector<int> CompressionHelper::startCompression() {
 
-
 	sliceImageIntoChunks();
-
 	std::cout << "\n\njee image sliced!";
 
-
-
-	// TODO calculate min and max color values of one chunk (and also two intermediate colors)
-	// TODO apply the calculated colors into the chunk and repeat process for all chunks
 	goThroughPixelDataAndCompress();
-	// TODO take all chunks and put them back to the uncharted char array of pixels
 	combineChunksBackToPixelArray();
 	std::cout << "jee image put back together!";
 
@@ -108,6 +104,7 @@ std::vector<int> CompressionHelper::startCompression() {
  *		- one chunk row constains 4 * width of image amount of pixels
  */
 void CompressionHelper::sliceImageIntoChunks() {
+	
 	int amountOfChunksPopulated = 0;
 	actualAmountOfChunksPopulated = 0;
 
@@ -145,6 +142,7 @@ void CompressionHelper::sliceImageIntoChunks() {
  *		- one chunk is 4x4, in one row there are widthOfImage/chunkSize number of chunks
  */
 void CompressionHelper::calculateAllPixelsNeededForRowOfChunks(int startingPoint) {
+	
 	pixelsNeededForOneRowOfChunks.clear();
 	int length = amountOfPixelsInARowOfChunks * 3;
 	for (int i = startingPoint; i < length; i++) {
@@ -158,6 +156,7 @@ void CompressionHelper::calculateAllPixelsNeededForRowOfChunks(int startingPoint
  *		- one row is 1 pixel * width of an image
  */
 void CompressionHelper::calculatePixelsFromOneRowOfImage(int startingPoint) {
+	
 	pixelsOfOneRowOfImage.clear();
 	int length = lengthOfOneRowInPixels * 3;
 	for (int i = startingPoint; i < length; i++) {
@@ -174,6 +173,7 @@ void CompressionHelper::calculatePixelsFromOneRowOfImage(int startingPoint) {
  *		  rows (amount of rows from image = chunkSize)
  */
 void CompressionHelper::sliceImageIntoOneChunkRow(int amountOfChunksPopulated, int startingPixel) {
+	
 	sliceImageIntoOneChunkRowCalledThisManyTimes++;
 	calculateAllPixelsNeededForRowOfChunks(startingPixel);
 
@@ -251,9 +251,9 @@ int CompressionHelper::getCurrentChunkStartingPixelPosition() {
 
 void CompressionHelper::combineChunksBackToPixelArray() {
 
-	InitializePixelDataArray();
-	int RGOrB = 0;
-	int stayInThisPixel = 0;
+	initializePixelDataArray();
+	//int RGOrB = 0;
+	//int stayInThisPixel = 0;
 	for (int i = 0; i < totalAmountOfChunks; i++) {
 		for (int j = 0; j < pixelsInOneChunk; j++) {
 				int pixelPosRFromPixelInfo = allChunks[i].pixelInfo[j].pixelRPositionInArray;
@@ -268,7 +268,8 @@ void CompressionHelper::combineChunksBackToPixelArray() {
 	}
 }
 
-void CompressionHelper::InitializePixelDataArray() {
+void CompressionHelper::initializePixelDataArray() {
+
 	int totalPixelsAmount = allPixelsFromImageVector.size();
 	for (int i = 0; i < totalPixelsAmount; i++) {
 		pixelDataArray.push_back(3);
@@ -277,4 +278,101 @@ void CompressionHelper::InitializePixelDataArray() {
 
 void CompressionHelper::goThroughPixelDataAndCompress() {
 
+	for (int i = 0; i < allChunks.size(); i++) {
+		calculateColorTableFromOneChunk(i);
+	}
+}
+
+void CompressionHelper::calculateColorTableFromOneChunk(int chunkIndex) {
+	
+	int pixelInfoSize = allChunks[chunkIndex].pixelInfo.size();
+	
+	/* CREATING THE COLOR TABLE */
+
+	// color_0 value (min)
+	int tempMinR = 255;
+	int tempMinG = 255;
+	int tempMinB = 255;
+
+	// color_1 value (max)
+	int tempMaxR = 0;
+	int tempMaxG = 0;
+	int tempMaxB = 0;
+
+	// These are calculated using linear interpolation
+	// color_2 = 2/3*color_0 + 1/3*color_1
+	int tempColor2R = 0;
+	int tempColor2G = 0;
+	int tempColor2B = 0;
+
+	// color_3 = 1/3*color_0 + 2/3*color_1
+	int tempColor3R = 0;
+	int tempColor3G = 0;
+	int tempColor3B = 0;
+
+	for (int i = 0; i < pixelInfoSize; i++) {
+		// find max and min red
+		if (tempMaxR < allChunks[chunkIndex].pixelInfo[i].colorValueOfPixelR) {
+			tempMaxR = allChunks[chunkIndex].pixelInfo[i].colorValueOfPixelR;
+		}
+
+		if (tempMinR > allChunks[chunkIndex].pixelInfo[i].colorValueOfPixelR) {
+			tempMinR = allChunks[chunkIndex].pixelInfo[i].colorValueOfPixelR;
+		}
+
+		// find max and min green
+		if (tempMaxG < allChunks[chunkIndex].pixelInfo[i].colorValueOfPixelG) {
+			tempMaxG = allChunks[chunkIndex].pixelInfo[i].colorValueOfPixelG;
+		}
+
+		if (tempMinG > allChunks[chunkIndex].pixelInfo[i].colorValueOfPixelG) {
+			tempMinG = allChunks[chunkIndex].pixelInfo[i].colorValueOfPixelG;
+		}
+
+		// fid max and min blue
+		if (tempMaxB < allChunks[chunkIndex].pixelInfo[i].colorValueOfPixelB) {
+			tempMaxB = allChunks[chunkIndex].pixelInfo[i].colorValueOfPixelB;
+		}
+
+		if (tempMinB > allChunks[chunkIndex].pixelInfo[i].colorValueOfPixelB) {
+			tempMinB = allChunks[chunkIndex].pixelInfo[i].colorValueOfPixelB;
+		}
+	}
+
+	/* ASSIGNING INDEX VALUES INTO ALL PIXELS OF A CHUNK */
+
+	// So each of the colors in the color table have 2 bit index value
+	//	color_0 = 00
+	//	color_1 = 01
+	//	color_2 = 10
+	//	color_3 = 11
+
+	// These index values are saved in an unsigned char array that has size of 4 bytes (32 bits)
+	unsigned char* indices = new unsigned char[32];
+
+	// So when all this is done we save 50% of the memory
+
+	// I'm a bit confused how this array is combined
+	// One place that sounded the most logical said: 4x4 texel chunk size after compression is 8 bytes (2 byte color_0, 2 byte color_1, 
+	//												 and 4 bytes index value array for each of the pixels in 4 x 4 texel chunk, meaning 
+	//												 16 x 2 bit values, which equals to 32bits = 4 bytes)
+	// http://www.reedbeta.com/blog/understanding-bcn-texture-compression-formats/ (BC1 paragraph)
+
+	// but for example Microsoft documentation about BC1 says that: "Instead of storing 16 colors, the algorithm saves 2 reference 
+	//												 colors (color_0 and color_1) and 16 2-bit color indices (blocks a–p), as shown in 
+	//												 the following diagram", but this diagram is saying that these a-p color indices are 
+	//												 just 1 byte, but 16 x 2 bits = 16 bits = 2 bytes?
+	// It's also confusing in the diagram that what's the total size of the array? It shows that there's 2 bytes for color_0 and 
+	//												 nothing marked for color_1 (or does that mean there are 2 bytes in total for color_0 
+	//												 and color_1 or does this mean both color_0 and color_1 are 2 bytes?) What are the 
+	//												 rest of the bytes when the diagram only shows 3 (or 5?) bytes?
+	// https://docs.microsoft.com/en-us/windows/win32/direct3d10/d3d10-graphics-programming-guide-resources-block-compression?redirectedfrom=MSDN
+
+	// Well I guess the Microsoft documentation means basically the same as the other place where I was reading from, but the main issue why
+	// I wasn't able to continue forward from this is because I don't understand how I can save color value using format (5:6:5) in 2 bytes
+
+	// I tried switching rgb to hexadecimal color value but it takes 3 bytes to store that
+	// I even tried to do that different ways using binary but I guess that also uses too much memory
+
+	// So I don't understand enough either about how pixels or colors are created, or about memory optimization or something like that :)
 }

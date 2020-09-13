@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <string>
 
 struct PixelInfo {
 	int colorValueOfPixelR;
@@ -12,7 +13,11 @@ struct PixelInfo {
 
 struct PixelChunk {
 	std::vector<PixelInfo> pixelInfo;
-	//int pixelPositionInArray;
+	int color_0;
+	int color_1;
+	int color_2;
+	int color_3;
+	unsigned char indices;
 };
 
 class CompressionHelper {
@@ -51,7 +56,7 @@ private:
 
 
 
-	void InitializePixelDataArray();
+	void initializePixelDataArray();
 
 	/*	Helper functions  */
 	int calculateHowManyChunksAreNeeded(int width, int height);
@@ -67,6 +72,13 @@ private:
 
 
 	void goThroughPixelDataAndCompress();
+	void calculateColorTableFromOneChunk(int chunkIndex);
+
+	int color_0;
+	int color_1;
+	int color_2;
+	int color_3;
+	unsigned char* indices = new unsigned char[32];
 
 public:
 	void initializeSettingsForCompression(int imageWidth, int imageHeight, std::vector<int> allPixelsFromBitmapVector, unsigned char* pixelsFromImage);
