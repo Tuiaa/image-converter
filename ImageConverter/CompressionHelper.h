@@ -47,17 +47,15 @@ private:
 	/*	General helper values	*/
 	int currentPixelFromChunk = 0;
 	int currentPixelFromThisRow = 0;
-	int currentRowFromChunk = 0;
 	int currentChunk = 0;
 	int currentPixelNumPosition = 0;
-	int actualAmountOfChunksPopulated = 0;
 
 	std::vector<int> pixelsNeededForOneRowOfChunks;		// one row of chunks is 4 * image width pixels
 	std::vector<int> pixelsOfOneRowOfImage;				// one row of image is image width amount of pixels
 
 	std::vector<PixelChunk> allChunks;
-	std::vector<int> pixelDataAfterCompression;
 	std::vector<int> pixelDataFromBitmap;
+	std::vector<int> pixelDataAfterCompression;
 
 	/*	Initialization functions	*/
 	void initializeVectorOfChunks();
@@ -68,7 +66,7 @@ private:
 	int calculateHowManyChunksAreNeeded(int width, int height);
 	void calculateAllPixelsNeededForRowOfChunks(int startingPoint);
 	void calculatePixelsFromOneRowOfImage(int startingPoint);
-	int getCurrentChunkStartingPixelPosition();
+	int getCurrentChunkStartingPixelPosition(int row);
 
 	/*	 Image slicing	 */
 	void sliceImageIntoOneChunkRow(int amountOfChunksPopulated, int startingPoint);
@@ -79,9 +77,9 @@ private:
 	void calculateColorTableFromOneChunk(int chunkIndex);
 
 	/*	 Combine image back into one array	 */
-	void combineChunksBackToPixelArray();
+	void combineChunksBackToPixelVector();
 
 public:
-	void initializeSettingsForCompression(int imageWidth, int imageHeight, std::vector<int> allPixelsFromBitmapVector, unsigned char* pixelsFromImage);
+	void initializeSettingsForCompression(int imageWidth, int imageHeight, std::vector<int> allPixelsFromBitmapVector);
 	std::vector<int> startCompression();
 };

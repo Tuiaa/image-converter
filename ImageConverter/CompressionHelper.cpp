@@ -9,8 +9,9 @@
  *		Initialize Settings For Compression
  *		- takes image width and height as parameters
  *		- amount of chunks the image should be sliced into can be calculated using that info
+ *		- also gets read pixel data from bitmap file
  */
-void CompressionHelper::initializeSettingsForCompression(int widthOfUsedImage, int heightOfUsedImage, std::vector<int> allPixelsFromBitmapVector, unsigned char* pixelsFromUsedImage) {
+void CompressionHelper::initializeSettingsForCompression(int widthOfUsedImage, int heightOfUsedImage, std::vector<int> allPixelsFromBitmapVector) {
 	
 	chunkSize = 4;
 
@@ -58,8 +59,8 @@ void CompressionHelper::initializeVectorOfChunks() {
 }
 
 /*
- *		Initialize Vector Of PixelData
- *		- initializes the pixel data (basically color value) stored inside a chunk
+ *		Initialize Vector Of PixelInfo
+ *		- initializes the pixel data (basically color value and position in original array) stored inside a chunk
  */
 std::vector<PixelInfo> CompressionHelper::initializeVectorOfPixelInfo() {
 
@@ -84,40 +85,35 @@ std::vector<PixelInfo> CompressionHelper::initializeVectorOfPixelInfo() {
  *		- method that handles the compression steps
  *		- DXT1 (BC1) block compression uses 4x4 pixel blocks (chunks)
  *		  and compresses their color data
+ *		- returns the compressed pixel vector, maybe should be combined straight to unsigned char,
+ *		  see goThroughPixelDataAndCompress() to see notes about how/why I didn't finish the compression
  */
 std::vector<int> CompressionHelper::startCompression() {
 
 	sliceImageIntoChunks();
-	std::cout << "\n\njee image sliced!";
-
 	goThroughPixelDataAndCompress();
-	combineChunksBackToPixelArray();
-	std::cout << "jee image put back together!";
+	combineChunksBackToPixelVector();
 
 	return pixelDataAfterCompression;
 }
 
 /*
  *		Slice Image Into Chunks
- *		- image should be sliced into 4x4 pixel chunks
+ *		- image should be sliced into 4 x 4 pixel chunks
  *		- one chunk row constains 4 * width of image amount of pixels
  */
 void CompressionHelper::sliceImageIntoChunks() {
 	
 	int amountOfChunksPopulated = 0;
-	actualAmountOfChunksPopulated = 0;
-
-	int howmanytimesrepeatedforinsliceimageintochunks = 0;
 	int amountOfChunkRowsPopulated = 0;
-	int chunkStartingPixelPosition = (lengthOfOneRowInPixels * 3) * 4 * amountOfChunkRowsPopulated;
+
+	int chunkStartingPixelPosition = (lengthOfOneRowInPixels * 3) * chunkSize * amountOfChunkRowsPopulated; // lengthOfOneRowInPixels * 3, because 3 color values, R, G an B
 
 	// Go through image one chunk row (height of chunk row is chunkSize) at a time
 	for (int i = 0; i < totalAmountOfChunksVertically; i++) {
 		sliceImageIntoOneChunkRow(amountOfChunksPopulated, chunkStartingPixelPosition);
 		amountOfChunksPopulated += totalAmountOfChunksHorizontally;
-		howmanytimesrepeatedforinsliceimageintochunks++;
 		amountOfChunkRowsPopulated++;
-
 	}
 }
 
@@ -129,7 +125,7 @@ void CompressionHelper::sliceImageIntoChunks() {
 void CompressionHelper::calculateAllPixelsNeededForRowOfChunks(int startingPoint) {
 	
 	pixelsNeededForOneRowOfChunks.clear();
-	int length = amountOfPixelsInARowOfChunks * 3;
+	int length = amountOfPixelsInARowOfChunks * 3;		// times 3, because 3 color values, R, G an B
 	for (int i = startingPoint; i < length; i++) {
 		pixelsNeededForOneRowOfChunks.push_back(pixelDataFromBitmap[i]);
 	}
@@ -143,7 +139,7 @@ void CompressionHelper::calculateAllPixelsNeededForRowOfChunks(int startingPoint
 void CompressionHelper::calculatePixelsFromOneRowOfImage(int startingPoint) {
 	
 	pixelsOfOneRowOfImage.clear();
-	int length = lengthOfOneRowInPixels * 3;
+	int length = lengthOfOneRowInPixels * 3;		// times 3, because 3 color values, R, G an B
 	for (int i = startingPoint; i < length; i++) {
 		pixelsOfOneRowOfImage.push_back(pixelsNeededForOneRowOfChunks[i]);
 	}
@@ -161,37 +157,35 @@ void CompressionHelper::sliceImageIntoOneChunkRow(int amountOfChunksPopulated, i
 	
 	calculateAllPixelsNeededForRowOfChunks(startingPixel);
 
-	int currentRowStartingChunkPosition = amountOfChunksPopulated;	// 100
-	int currentRowLastChunkPosition = currentRowStartingChunkPosition + totalAmountOfChunksHorizontally;	// 199
+	int currentRowStartingChunkPosition = amountOfChunksPopulated;
+	int currentRowLastChunkPosition = currentRowStartingChunkPosition + totalAmountOfChunksHorizontally;
 
-	currentRowFromChunk = 0;
-	int howManyRepeats = chunkSize;
+	for (int row = 0; row < chunkSize; row++) {
 
-	for (int i = 0; i < howManyRepeats; i++) {
-		int currentRowStartingPixelPosition = currentRowFromChunk * lengthOfOneRowInPixels;
+		int currentRowStartingPixelPosition = row * lengthOfOneRowInPixels;
 
 		calculatePixelsFromOneRowOfImage(currentRowStartingPixelPosition);
 
-		int currentChunkStartingPixelPosition = getCurrentChunkStartingPixelPosition();
+		int currentChunkStartingPixelPosition = getCurrentChunkStartingPixelPosition(row);
 		int maxPixelPositionOnChunk = currentChunkStartingPixelPosition + chunkSize;
-		int currentRowLastPixelPosition = currentRowStartingPixelPosition + (lengthOfOneRowInPixels * 3);
+		int currentRowLastPixelPosition = currentRowStartingPixelPosition + (lengthOfOneRowInPixels * 3);	// times 3, because 3 color values, R, G an B
 
 		// Save the color value from image into chunk (currently uses temp data)
 		for (int chunk = currentRowStartingChunkPosition; chunk < currentRowLastChunkPosition; chunk++) {
 			for (int pixelPosition = currentChunkStartingPixelPosition; pixelPosition < maxPixelPositionOnChunk; pixelPosition++) {
 				
-				for (int i = 0; i < 3; i++) {
-					if (i == 0) {
+				for (int redGreenOrBluePixel = 0; redGreenOrBluePixel < 3; redGreenOrBluePixel++) {
+					if (redGreenOrBluePixel == 0) {			// RED
 						allChunks[chunk].pixelInfo[pixelPosition].colorValueOfPixelR = pixelDataFromBitmap[currentPixelNumPosition];
 						allChunks[chunk].pixelInfo[pixelPosition].pixelRPositionInArray = currentPixelNumPosition;
 						currentPixelNumPosition++;
 					}
-					else if (i == 1) {
+					else if (redGreenOrBluePixel == 1) {	// GREEN
 						allChunks[chunk].pixelInfo[pixelPosition].colorValueOfPixelG = pixelDataFromBitmap[currentPixelNumPosition];
 						allChunks[chunk].pixelInfo[pixelPosition].pixelGPositionInArray = currentPixelNumPosition;
 						currentPixelNumPosition++;
 					}
-					else if (i == 2) {
+					else if (redGreenOrBluePixel == 2) {	// BLUE
 						allChunks[chunk].pixelInfo[pixelPosition].colorValueOfPixelB = pixelDataFromBitmap[currentPixelNumPosition];
 						allChunks[chunk].pixelInfo[pixelPosition].pixelBPositionInArray = currentPixelNumPosition;
 						currentPixelNumPosition++;
@@ -200,40 +194,39 @@ void CompressionHelper::sliceImageIntoOneChunkRow(int amountOfChunksPopulated, i
 			}
 			currentChunk++;
 		}
-		currentRowFromChunk++;
 	}
-
-	// reset current row of chunk because this set of chunks is added
-	currentRowFromChunk = 0;
-	actualAmountOfChunksPopulated = actualAmountOfChunksPopulated + totalAmountOfChunksHorizontally;
 }
 
 /*
  *		Get Current Chunk Starting Pixel Position
- *		- hardcoded values, should be refactored
  *		- returns the starting position of color value saved in chunk in this row
+ *		- currently hardcoded for chunksize of 4
  */
-int CompressionHelper::getCurrentChunkStartingPixelPosition() {
+int CompressionHelper::getCurrentChunkStartingPixelPosition(int currentRow) {
 
 	int currentPixelFromChunk = 0;
 
-	if (currentRowFromChunk == 0) {
+	if (currentRow == 0) {
 		currentPixelFromChunk = 0;
 	}
-	else if (currentRowFromChunk == 1) {
+	else if (currentRow == 1) {
 		currentPixelFromChunk = 4;
 	}
-	else if (currentRowFromChunk == 2) {
+	else if (currentRow == 2) {
 		currentPixelFromChunk = 8;
 	}
-	else if (currentRowFromChunk == 3) {
+	else if (currentRow == 3) {
 		currentPixelFromChunk = 12;
 	}
 
 	return currentPixelFromChunk;
 }
 
-void CompressionHelper::combineChunksBackToPixelArray() {
+/*
+ *		Combine Chunks Back To Pixel Vector
+ *		- takes all pixels from chunks and puts them back into one vector
+ */
+void CompressionHelper::combineChunksBackToPixelVector() {
 
 	initializePixelDataAfterCompressionVector();
 
@@ -251,6 +244,10 @@ void CompressionHelper::combineChunksBackToPixelArray() {
 	}
 }
 
+/*
+ *		Initialize PixelDataAfterCompression Vector
+ *		- Not the best name, but it inititalizes the vector that's named pixelDataAfterCompression
+ */
 void CompressionHelper::initializePixelDataAfterCompressionVector() {
 
 	int totalPixelsAmount = pixelDataFromBitmap.size();
@@ -259,13 +256,22 @@ void CompressionHelper::initializePixelDataAfterCompressionVector() {
 	}
 }
 
+/*
+ *		Go Through Pixel Data And Compress
+ *		- goes through all chunks and compresses the pixel data from them
+ */
 void CompressionHelper::goThroughPixelDataAndCompress() {
 
+	// Still WIP
 	for (int i = 0; i < allChunks.size(); i++) {
 		calculateColorTableFromOneChunk(i);
 	}
 }
 
+/*
+ *		Calculate Color Table From One Chunk
+ *		- calculates the needed color_0, color_1, color_2 and color_3 values needed for compression
+ */
 void CompressionHelper::calculateColorTableFromOneChunk(int chunkIndex) {
 	
 	int pixelInfoSize = allChunks[chunkIndex].pixelInfo.size();

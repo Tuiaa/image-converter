@@ -34,7 +34,7 @@ int main()
 		std::cout << "\n\ngoing into compression stuff";
 		/*	 COMPRESSION	*/
 		CompressionHelper compressionHelper = CompressionHelper();
-		compressionHelper.initializeSettingsForCompression(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height,bitmapHelper.bitmap.RGBPixelData, bitmapHelper.bitmap.pixelData);
+		compressionHelper.initializeSettingsForCompression(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height,bitmapHelper.bitmap.RGBPixelData);
 		std::vector<int> compressedPixels = compressionHelper.startCompression();
 
 		std::cout << "\n\ngoing into saving stuff";
