@@ -350,18 +350,15 @@ void CompressionHelper::calculateColorTableFromOneChunk(int chunkIndex) {
 	// but for example Microsoft documentation about BC1 says that: "Instead of storing 16 colors, the algorithm saves 2 reference 
 	//												 colors (color_0 and color_1) and 16 2-bit color indices (blocks a–p), as shown in 
 	//												 the following diagram", but this diagram is saying that these a-p color indices are 
-	//												 just 1 byte, but 16 x 2 bits = 16 bits = 2 bytes?
+	//												 just 1 byte, but 16 x 2 bits = 32 bits = 4 bytes?
 	// It's also confusing in the diagram that what's the total size of the array? It shows that there's 2 bytes for color_0 and 
 	//												 nothing marked for color_1 (or does that mean there are 2 bytes in total for color_0 
 	//												 and color_1 or does this mean both color_0 and color_1 are 2 bytes?) What are the 
-	//												 rest of the bytes when the diagram only shows 3 (or 5?) bytes?
+	//												 rest of the bytes when the diagram only shows 3 bytes (or 5 if both colors are 2 bytes)?
 	// https://docs.microsoft.com/en-us/windows/win32/direct3d10/d3d10-graphics-programming-guide-resources-block-compression?redirectedfrom=MSDN
 
 	// Well I guess the Microsoft documentation means basically the same as the other place where I was reading from, but the main issue why
-	// I wasn't able to continue forward from this is because I don't understand how I can save color value using format (5:6:5) in 2 bytes
-
-	// I tried switching rgb to hexadecimal color value but it takes 3 bytes to store that
-	// I even tried to do that different ways using binary but I guess that also uses too much memory
-
-	// So I don't understand enough either about how pixels or colors are created, or about memory optimization or something like that :)
+	// I wasn't able to continue forward from this is because I don't understand what does it mean to save color value using format (5:6:5) 
+	// and how to do that in 2 bytes. I understand that in 2 bytes there's 16 bits and 5 + 6 + 5 = 16, but I'm not sure I understand what for
+	// example those 5 bits of red are
 }
