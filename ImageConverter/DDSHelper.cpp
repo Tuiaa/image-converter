@@ -13,63 +13,63 @@ void DDSHelper::readDDSImageFromFile(const char* fileName) {
 
 	dds = DDS();
 
-	FILE* f = fopen(fileName, "rb");
+	FILE* imageFile = fopen(fileName, "rb");
 
 	// Get the whole file size
-	fseek(f, 0, SEEK_END);
-	long file_size = ftell(f);
-	fseek(f, 0, SEEK_SET);
+	fseek(imageFile, 0, SEEK_END);
+	long file_size = ftell(imageFile);
+	fseek(imageFile, 0, SEEK_SET);
 
 	dds.totalSizeOfTheFile = file_size;
 
 	// Reading magic value
-	fread(&dds.dwMagic, 1, 4, f);
+	fread(&dds.dwMagic, 1, 4, imageFile);
 
 	// Reading header
-	fread(&dds.header.dwSize, 1, 4, f);
-	fread(&dds.header.dwFlags, 1, 4, f);
-	fread(&dds.header.dwHeight, 1, 4, f);
-	fread(&dds.header.dwWidth, 1, 4, f);
-	fread(&dds.header.dwPitchOrLinearSize, 1, 4, f);
-	fread(&dds.header.dwDepth, 1, 4, f);
-	fread(&dds.header.dwMipMapCount, 1, 4, f);
-	fread(&dds.header.dwReserved1, 1, 44, f);
+	fread(&dds.header.dwSize, 1, 4, imageFile);
+	fread(&dds.header.dwFlags, 1, 4, imageFile);
+	fread(&dds.header.dwHeight, 1, 4, imageFile);
+	fread(&dds.header.dwWidth, 1, 4, imageFile);
+	fread(&dds.header.dwPitchOrLinearSize, 1, 4, imageFile);
+	fread(&dds.header.dwDepth, 1, 4, imageFile);
+	fread(&dds.header.dwMipMapCount, 1, 4, imageFile);
+	fread(&dds.header.dwReserved1, 1, 44, imageFile);
 
 	// Reading pixel format
-	fread(&dds.header.pixelFormat.dwSize, 1, 4, f);
-	fread(&dds.header.pixelFormat.dwFlags, 1, 4, f);
-	fread(&dds.header.pixelFormat.dwFourCC, 1, 4, f);
-	fread(&dds.header.pixelFormat.dwRGBBitCount, 1, 4, f);
-	fread(&dds.header.pixelFormat.dwRBitMask, 1, 4, f);
-	fread(&dds.header.pixelFormat.dwGBitMask, 1, 4, f);
-	fread(&dds.header.pixelFormat.dwBBitMask, 1, 4, f);
-	fread(&dds.header.pixelFormat.dwABitMask, 1, 4, f);
+	fread(&dds.header.pixelFormat.dwSize, 1, 4, imageFile);
+	fread(&dds.header.pixelFormat.dwFlags, 1, 4, imageFile);
+	fread(&dds.header.pixelFormat.dwFourCC, 1, 4, imageFile);
+	fread(&dds.header.pixelFormat.dwRGBBitCount, 1, 4, imageFile);
+	fread(&dds.header.pixelFormat.dwRBitMask, 1, 4, imageFile);
+	fread(&dds.header.pixelFormat.dwGBitMask, 1, 4, imageFile);
+	fread(&dds.header.pixelFormat.dwBBitMask, 1, 4, imageFile);
+	fread(&dds.header.pixelFormat.dwABitMask, 1, 4, imageFile);
 
 	// Continuing reading header
-	fread(&dds.header.dwCaps, 1, 4, f);
-	fread(&dds.header.dwCaps2, 1, 4, f);
-	fread(&dds.header.dwCaps3, 1, 4, f);
-	fread(&dds.header.dwCaps4, 1, 4, f);
-	fread(&dds.header.dwReserved2, 1, 4, f);
+	fread(&dds.header.dwCaps, 1, 4, imageFile);
+	fread(&dds.header.dwCaps2, 1, 4, imageFile);
+	fread(&dds.header.dwCaps3, 1, 4, imageFile);
+	fread(&dds.header.dwCaps4, 1, 4, imageFile);
+	fread(&dds.header.dwReserved2, 1, 4, imageFile);
 
 	// Reading header10
-	fread(&dds.header10.dxgiFormat, 1, 4, f);
-	fread(&dds.header10.resourceDimension, 1, 4, f);
-	fread(&dds.header10.miscFlag, 1, 4, f);
-	fread(&dds.header10.arraySize, 1, 4, f);
-	fread(&dds.header10.miscFlags2, 1, 4, f);
+	fread(&dds.header10.dxgiFormat, 1, 4, imageFile);
+	fread(&dds.header10.resourceDimension, 1, 4, imageFile);
+	fread(&dds.header10.miscFlag, 1, 4, imageFile);
+	fread(&dds.header10.arraySize, 1, 4, imageFile);
+	fread(&dds.header10.miscFlags2, 1, 4, imageFile);
 
 	// Reading image pixel data
 	int imageSize = (dds.header.dwWidth * dds.header.dwHeight * 4) / 8;		// DXT1 compressed images have 4 bitsPerPixel --> (width * height * 4) is in bits/pixel so needs to be divided by 8 to get bytes
 	dds.bdata = new unsigned char[imageSize];
-	fread(dds.bdata, 1, imageSize, f);
+	fread(dds.bdata, 1, imageSize, imageFile);
 
 	// Reading end settings
 	int endSettingsSize = dds.totalSizeOfTheFile - imageSize - 128 - 20;		// 128 = magic value and header size combined, 20 is header10 size
 	dds.bdata2 = new unsigned char[endSettingsSize];
-	fread(dds.bdata2, 1, endSettingsSize, f);
+	fread(dds.bdata2, 1, endSettingsSize, imageFile);
 
-	fclose(f);
+	fclose(imageFile);
 
 	// Also using taking the data into a vector because it's easier for me to debug with this
 	for (int i = 0; i < imageSize; i++) {

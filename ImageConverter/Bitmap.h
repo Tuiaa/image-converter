@@ -21,7 +21,7 @@
  */
 struct BitmapFileHeader
 {
-	const char *BM = "BM";			// First 2 bytes are the characters of bitmap file are "B" and "M" in ASCII
+	const char *headerField = "BM";	// First 2 bytes are the characters of bitmap file are "B" and "M" in ASCII
 	int filesize;					// Next is the size of the bitmap in bytes
 	int reserved = 0x0000;			// Next is reserved bytes, should be 0
 	int dataOffset;					// Data offset, i.e. starting address of the byte where the bitmap image data (pixel array) can be found

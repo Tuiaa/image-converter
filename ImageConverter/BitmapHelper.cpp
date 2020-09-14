@@ -16,6 +16,7 @@ void BitmapHelper::readBitmapImageFromFile(const char *fileName)
 	int bytesPerPixel;
 
 	FILE *imageFile = fopen(fileName, "rb");				// Opens the image file
+	fseek(imageFile, 0, SEEK_SET);
 
 	fseek(imageFile, WIDTH_OFFSET, SEEK_SET);
 	fread(&width, 4, 1, imageFile);							// The size is 4 bytes (value from BMP table)
