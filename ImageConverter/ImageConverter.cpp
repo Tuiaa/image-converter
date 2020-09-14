@@ -34,7 +34,7 @@ int main()
 		std::cout << "\n\ngoing into compression stuff";
 		/*	 COMPRESSION	*/
 		CompressionHelper compressionHelper = CompressionHelper();
-		compressionHelper.initializeSettingsForCompression(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height,bitmapHelper.bitmap.RGBPixelData);
+		compressionHelper.initializeSettingsForCompression(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.bitmap.pixelData, bitmapHelper.bitmap.pixelDataAsIntVector);
 		std::vector<int> compressedPixels = compressionHelper.startCompression();
 
 		std::cout << "\n\ngoing into saving stuff";
@@ -42,7 +42,7 @@ int main()
 		bitmapHelper.writeBitmap(outputFileName, compressedPixels);
 
 		ddsHelper.readDDSImageFromFile("test-dxt1-dds-file.dds");
-		ddsHelper.writeDDSFile("new-test-dxt1-dds-file.dds", bitmapHelper.bitmap.pixelData, compressedPixels);
+		ddsHelper.writeDDSFile("new-test-dxt1-dds-file.dds", compressedPixels);
 	}
 	else {
 		std::cout << "Filename was not supported, please restart the app and try again!";

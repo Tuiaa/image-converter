@@ -9,6 +9,7 @@
  */
 struct PixelInfo {
 	int colorValueOfPixelR;
+	char colorValueOfPixelRchar;
 	int colorValueOfPixelG;
 	int colorValueOfPixelB;
 	int pixelRPositionInArray;
@@ -55,6 +56,7 @@ private:
 
 	std::vector<PixelChunk> allChunks;
 	std::vector<int> pixelDataFromBitmap;
+	unsigned char* charArrayPixelDataFromBitmap;
 	std::vector<int> pixelDataAfterCompression;
 
 	/*	Initialization functions	*/
@@ -80,6 +82,6 @@ private:
 	void combineChunksBackToPixelVector();
 
 public:
-	void initializeSettingsForCompression(int imageWidth, int imageHeight, std::vector<int> allPixelsFromBitmapVector);
+	void initializeSettingsForCompression(int imageWidth, int imageHeight, unsigned char* charArrayOfPixelsFromBitmap, std::vector<int> allPixelsFromBitmapVector);
 	std::vector<int> startCompression();
 };

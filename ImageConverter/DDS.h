@@ -77,4 +77,6 @@ public:
 	DDS_HEADER_DXT10 header10;
 	unsigned char* bdata;
 	unsigned char* bdata2;
+
+	int totalSizeOfTheFile;
 };

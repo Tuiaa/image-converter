@@ -15,12 +15,12 @@ void DDSHelper::readDDSImageFromFile(const char* fileName) {
 
 	FILE* f = fopen(fileName, "rb");
 
-	// Get the whole size
+	// Get the whole file size
 	fseek(f, 0, SEEK_END);
 	long file_size = ftell(f);
 	fseek(f, 0, SEEK_SET);
 
-	totalSize = file_size;
+	dds.totalSizeOfTheFile = file_size;
 
 	// Reading magic value
 	fread(&dds.dwMagic, 1, 4, f);
@@ -60,19 +60,20 @@ void DDSHelper::readDDSImageFromFile(const char* fileName) {
 	fread(&dds.header10.miscFlags2, 1, 4, f);
 
 	// Reading image pixel data
-	int imageSize = (dds.header.dwWidth * dds.header.dwHeight * 4) / 8;		// DXT1 compressed images have 4 bitsPerPixel --> width * height * 4 is in bits/pixel so needs to be divided by 8 to get bytes
-	pixelDataFromImageArray = new unsigned char[imageSize];
-	fread(pixelDataFromImageArray, 1, imageSize, f);
+	int imageSize = (dds.header.dwWidth * dds.header.dwHeight * 4) / 8;		// DXT1 compressed images have 4 bitsPerPixel --> (width * height * 4) is in bits/pixel so needs to be divided by 8 to get bytes
+	dds.bdata = new unsigned char[imageSize];
+	fread(dds.bdata, 1, imageSize, f);
 
 	// Reading end settings
-	int endSettingsSize = totalSize - imageSize - 128 - 20;		// 128 = magic value and header size combined, 20 is header10 size
-	endSettingsData = new unsigned char[endSettingsSize];
-	fread(endSettingsData, 1, endSettingsSize, f);
+	int endSettingsSize = dds.totalSizeOfTheFile - imageSize - 128 - 20;		// 128 = magic value and header size combined, 20 is header10 size
+	dds.bdata2 = new unsigned char[endSettingsSize];
+	fread(dds.bdata2, 1, endSettingsSize, f);
 
 	fclose(f);
 
+	// Also using taking the data into a vector because it's easier for me to debug with this
 	for (int i = 0; i < imageSize; i++) {
-		pixelDataFromDDSImageAsVector.push_back(pixelDataFromImageArray[i]);
+		pixelDataFromDDSImageAsVector.push_back(dds.bdata[i]);
 	}
 }
 
@@ -90,7 +91,7 @@ void DDSHelper::saveDDSDefaultValues() {
 	dds.header.dwFlags = (DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT);
 	int width2 = dds.header.dwWidth;
 	int height2 = dds.header.dwHeight;
-	unsigned long pitch = std::max(1, ((width2 + 3) / 4)) * 8;		// block size is 8 bytes for DXT1 format, calculation is from documentation
+	unsigned long pitch = std::max(1, ((width2 + 3) / 4)) * 8;	// block size is 8 bytes for DXT1 format, calculation is from documentation
 	dds.header.dwPitchOrLinearSize = pitch;
 	dds.header.dwDepth = 0;
 	dds.header.dwMipMapCount = 0;
@@ -102,7 +103,7 @@ void DDSHelper::saveDDSDefaultValues() {
 	dds.header.pixelFormat.dwSize = DDS_PIXELFORMAT_DWSIZE;
 	dds.header.pixelFormat.dwFlags = (DDPF_FOURCC);
 
-	dds.header.pixelFormat.dwFourCC = 68888449;		// // Not sure why this was 827611204 when reading from my test dds file. DXT1 should be afaik 68888449
+	dds.header.pixelFormat.dwFourCC = 68888449;		// Not sure why this was 827611204 when reading from my test dds file. DXT1 should be, if I understood correctly, 68888449
 	dds.header.pixelFormat.dwRGBBitCount = DDS_PIXELFORMAT_DWRGBBITCOUNT;
 	dds.header.pixelFormat.dwRBitMask = 0x00ff0000;
 	dds.header.pixelFormat.dwGBitMask = 0x0000ff00;
@@ -129,7 +130,7 @@ void DDSHelper::saveDDSDefaultValues() {
  *		- Creates a new .dds file
  *		- Currently takes both pixel data straight from bitmap as well as the pixel data that has been through compression for testing purposes
  */
-void DDSHelper::writeDDSFile(const char *fileName, unsigned char* pixelDataStraightFromBitmap, std::vector<int> pixelDataAfterCompression)
+void DDSHelper::writeDDSFile(const char *fileName, std::vector<int> pixelDataAfterCompression)
 {
 	FILE *outputFile = fopen(fileName, "wb");
 
@@ -180,7 +181,7 @@ void DDSHelper::writeDDSFile(const char *fileName, unsigned char* pixelDataStrai
 
 	/* Uncomment these if want to use pixels from bitmap without doing compression */
 	//int imageSize = (dds.header.dwWidth * dds.header.dwHeight * 4) / 8;		// DXT1 compressed images have 4 bitsPerPixel --> width * height * 4 is in bits/pixel so needs to be divided by 8 to get bytes
-	//fwrite(pixelDataFromImageArray, imageSize, 1, outputFile);
+	//fwrite(dds.bdata, imageSize, 1, outputFile);
 
 	/* Uncomment this if want to use pixels that have been saved from read .dds file */
 	//for (int i = 0; i < pixelDataFromDDSImageAsVector.size(); i++)
@@ -189,7 +190,7 @@ void DDSHelper::writeDDSFile(const char *fileName, unsigned char* pixelDataStrai
 	//}
 
 	// Currently not using end settings, because I'm not sure I understood what those are
-	//fwrite(&endSettingsVector, endSettingsSize, 1, outputFile);
+	//fwrite(dds.bdata2, endSettingsSize, 1, outputFile);
 
 	fclose(outputFile);
 }

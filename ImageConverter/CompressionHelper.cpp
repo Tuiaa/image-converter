@@ -11,7 +11,7 @@
  *		- amount of chunks the image should be sliced into can be calculated using that info
  *		- also gets read pixel data from bitmap file
  */
-void CompressionHelper::initializeSettingsForCompression(int widthOfUsedImage, int heightOfUsedImage, std::vector<int> allPixelsFromBitmapVector) {
+void CompressionHelper::initializeSettingsForCompression(int widthOfUsedImage, int heightOfUsedImage, unsigned char* charArrayOfPixelsFromBitmap, std::vector<int> allPixelsFromBitmapVector) {
 	
 	chunkSize = 4;
 
@@ -23,6 +23,7 @@ void CompressionHelper::initializeSettingsForCompression(int widthOfUsedImage, i
 	lengthOfOneRowInPixels = widthOfUsedImage;
 	pixelsInOneChunk = chunkSize * chunkSize;
 
+	charArrayPixelDataFromBitmap = charArrayOfPixelsFromBitmap;
 	pixelDataFromBitmap = allPixelsFromBitmapVector;
 
 	initializeVectorOfChunks();
@@ -262,7 +263,6 @@ void CompressionHelper::initializePixelDataAfterCompressionVector() {
  */
 void CompressionHelper::goThroughPixelDataAndCompress() {
 
-	// Still WIP
 	for (int i = 0; i < allChunks.size(); i++) {
 		calculateColorTableFromOneChunk(i);
 	}
@@ -318,7 +318,7 @@ void CompressionHelper::calculateColorTableFromOneChunk(int chunkIndex) {
 			tempMinG = allChunks[chunkIndex].pixelInfo[i].colorValueOfPixelG;
 		}
 
-		// fid max and min blue
+		// find max and min blue
 		if (tempMaxB < allChunks[chunkIndex].pixelInfo[i].colorValueOfPixelB) {
 			tempMaxB = allChunks[chunkIndex].pixelInfo[i].colorValueOfPixelB;
 		}
@@ -359,6 +359,6 @@ void CompressionHelper::calculateColorTableFromOneChunk(int chunkIndex) {
 
 	// Well I guess the Microsoft documentation means basically the same as the other place where I was reading from, but the main issue why
 	// I wasn't able to continue forward from this is because I don't understand what does it mean to save color value using format (5:6:5) 
-	// and how to do that in 2 bytes. I understand that in 2 bytes there's 16 bits and 5 + 6 + 5 = 16, but I'm not sure I understand what for
-	// example those 5 bits of red are
+	// and how to do that in 2 bytes. I understand that in 2 bytes there's 16 bits and 5 + 6 + 5 = 16, but I'm not sure I understand how to
+	// for example take those 5 bits of red
 }
