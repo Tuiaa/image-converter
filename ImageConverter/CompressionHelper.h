@@ -55,7 +55,7 @@ private:
 	std::vector<int> pixelsOfOneRowOfImage;				// one row of image is image width amount of pixels
 
 	std::vector<PixelChunk> allChunks;
-	std::vector<int> pixelDataFromBitmap;
+	std::vector<int> vectorPixelDataFromBitmap;
 	unsigned char* charArrayPixelDataFromBitmap;
 	std::vector<int> pixelDataAfterCompression;
 

@@ -11,7 +11,7 @@
  *		- amount of chunks the image should be sliced into can be calculated using that info
  *		- also gets read pixel data from bitmap file
  */
-void CompressionHelper::initializeSettingsForCompression(int widthOfUsedImage, int heightOfUsedImage, unsigned char* charArrayOfPixelsFromBitmap, std::vector<int> allPixelsFromBitmapVector) {
+void CompressionHelper::initializeSettingsForCompression(int widthOfUsedImage, int heightOfUsedImage, unsigned char* charArrayOfAllPixelsFromBitmap, std::vector<int> vectorOfAllPixelsFromBitmap) {
 	
 	chunkSize = 4;
 
@@ -23,8 +23,8 @@ void CompressionHelper::initializeSettingsForCompression(int widthOfUsedImage, i
 	lengthOfOneRowInPixels = widthOfUsedImage;
 	pixelsInOneChunk = chunkSize * chunkSize;
 
-	charArrayPixelDataFromBitmap = charArrayOfPixelsFromBitmap;
-	pixelDataFromBitmap = allPixelsFromBitmapVector;
+	charArrayPixelDataFromBitmap = charArrayOfAllPixelsFromBitmap;
+	vectorPixelDataFromBitmap = vectorOfAllPixelsFromBitmap;
 
 	initializeVectorOfChunks();
 }
@@ -128,7 +128,7 @@ void CompressionHelper::calculateAllPixelsNeededForRowOfChunks(int startingPoint
 	pixelsNeededForOneRowOfChunks.clear();
 	int length = amountOfPixelsInARowOfChunks * 3;		// times 3, because 3 color values, R, G an B
 	for (int i = startingPoint; i < length; i++) {
-		pixelsNeededForOneRowOfChunks.push_back(pixelDataFromBitmap[i]);
+		pixelsNeededForOneRowOfChunks.push_back(vectorPixelDataFromBitmap[i]);
 	}
 }
 
@@ -177,17 +177,17 @@ void CompressionHelper::sliceImageIntoOneChunkRow(int amountOfChunksPopulated, i
 				
 				for (int redGreenOrBluePixel = 0; redGreenOrBluePixel < 3; redGreenOrBluePixel++) {
 					if (redGreenOrBluePixel == 0) {			// RED
-						allChunks[chunk].pixelInfo[pixelPosition].colorValueOfPixelR = pixelDataFromBitmap[currentPixelNumPosition];
+						allChunks[chunk].pixelInfo[pixelPosition].colorValueOfPixelR = vectorPixelDataFromBitmap[currentPixelNumPosition];
 						allChunks[chunk].pixelInfo[pixelPosition].pixelRPositionInArray = currentPixelNumPosition;
 						currentPixelNumPosition++;
 					}
 					else if (redGreenOrBluePixel == 1) {	// GREEN
-						allChunks[chunk].pixelInfo[pixelPosition].colorValueOfPixelG = pixelDataFromBitmap[currentPixelNumPosition];
+						allChunks[chunk].pixelInfo[pixelPosition].colorValueOfPixelG = vectorPixelDataFromBitmap[currentPixelNumPosition];
 						allChunks[chunk].pixelInfo[pixelPosition].pixelGPositionInArray = currentPixelNumPosition;
 						currentPixelNumPosition++;
 					}
 					else if (redGreenOrBluePixel == 2) {	// BLUE
-						allChunks[chunk].pixelInfo[pixelPosition].colorValueOfPixelB = pixelDataFromBitmap[currentPixelNumPosition];
+						allChunks[chunk].pixelInfo[pixelPosition].colorValueOfPixelB = vectorPixelDataFromBitmap[currentPixelNumPosition];
 						allChunks[chunk].pixelInfo[pixelPosition].pixelBPositionInArray = currentPixelNumPosition;
 						currentPixelNumPosition++;
 					}
@@ -251,7 +251,7 @@ void CompressionHelper::combineChunksBackToPixelVector() {
  */
 void CompressionHelper::initializePixelDataAfterCompressionVector() {
 
-	int totalPixelsAmount = pixelDataFromBitmap.size();
+	int totalPixelsAmount = vectorPixelDataFromBitmap.size();
 	for (int i = 0; i < totalPixelsAmount; i++) {
 		pixelDataAfterCompression.push_back(3);
 	}

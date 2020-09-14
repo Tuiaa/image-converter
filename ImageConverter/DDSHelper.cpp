@@ -71,7 +71,7 @@ void DDSHelper::readDDSImageFromFile(const char* fileName) {
 
 	fclose(imageFile);
 
-	// Also using taking the data into a vector because it's easier for me to debug with this
+	// Also taking the data into a vector because it's easier for me to debug with this
 	for (int i = 0; i < imageSize; i++) {
 		pixelDataFromDDSImageAsVector.push_back(dds.bdata[i]);
 	}
@@ -79,7 +79,7 @@ void DDSHelper::readDDSImageFromFile(const char* fileName) {
 
 /*
  *		Save DDS Default Values
- *		- When creating a new .dds file, sets the values that are needed for DXT1 BC1 compressed image
+ *		- when creating a new .dds file, sets the values that are needed for DXT1 BC1 compressed image
  */
 void DDSHelper::saveDDSDefaultValues() {
 
@@ -89,12 +89,15 @@ void DDSHelper::saveDDSDefaultValues() {
 	// Adding DDS_HEADER default values
 	dds.header.dwSize = DDS_HEADER_DWSIZE;
 	dds.header.dwFlags = (DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT);
+
 	int width2 = dds.header.dwWidth;
 	int height2 = dds.header.dwHeight;
 	unsigned long pitch = std::max(1, ((width2 + 3) / 4)) * 8;	// block size is 8 bytes for DXT1 format, calculation is from documentation
+
 	dds.header.dwPitchOrLinearSize = pitch;
 	dds.header.dwDepth = 0;
 	dds.header.dwMipMapCount = 0;
+
 	for (int i = 0; i < 11; i++) {
 		dds.header.dwReserved1[i] = 0;
 	}
@@ -102,8 +105,7 @@ void DDSHelper::saveDDSDefaultValues() {
 	// Adding DDS_PIXELFORMAT default values
 	dds.header.pixelFormat.dwSize = DDS_PIXELFORMAT_DWSIZE;
 	dds.header.pixelFormat.dwFlags = (DDPF_FOURCC);
-
-	dds.header.pixelFormat.dwFourCC = 68888449;		// Not sure why this was 827611204 when reading from my test dds file. DXT1 should be, if I understood correctly, 68888449
+	dds.header.pixelFormat.dwFourCC = 827611204;		// Not sure why this was 827611204 when reading from my test dds file. DXT1 should be, if I understood correctly, 68888449 (DXT1 in ASCII)
 	dds.header.pixelFormat.dwRGBBitCount = DDS_PIXELFORMAT_DWRGBBITCOUNT;
 	dds.header.pixelFormat.dwRBitMask = 0x00ff0000;
 	dds.header.pixelFormat.dwGBitMask = 0x0000ff00;
@@ -186,7 +188,7 @@ void DDSHelper::writeDDSFile(const char *fileName, std::vector<int> pixelDataAft
 	/* Uncomment this if want to use pixels that have been saved from read .dds file */
 	//for (int i = 0; i < pixelDataFromDDSImageAsVector.size(); i++)
 	//{
-	//	fwrite(&pixelDataFromDDSImageAsVector[i], 1, 1, outputFile);
+	//	  fwrite(&pixelDataFromDDSImageAsVector[i], 1, 1, outputFile);
 	//}
 
 	// Currently not using end settings, because I'm not sure I understood what those are

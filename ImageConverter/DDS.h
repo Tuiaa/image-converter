@@ -27,14 +27,14 @@ typedef enum D3D10_RESOURCE_DIMENSION {	D3D10_RESOURCE_DIMENSION_TEXTURE2D };
  *		- surface pixel format
  */
 struct DDS_PIXELFORMAT {
-	DWORD dwSize;								// Structure size, always 32		
-	DWORD dwFlags;								// Values which indicate what type of data is in the surface
-	DWORD dwFourCC;								// Four-character codes for specifying compressed or custom formats
-	DWORD dwRGBBitCount;						// Number of bits in an RGB
-	DWORD dwRBitMask;							// Red mask for reading color data
-	DWORD dwGBitMask;							// Green mask for reading color data
-	DWORD dwBBitMask;							// Blue mask for reading color data
-	DWORD dwABitMask;							// Alpha mask for reading color data
+	DWORD dwSize;									// Structure size, always 32		
+	DWORD dwFlags;									// Values which indicate what type of data is in the surface
+	DWORD dwFourCC;									// Four-character codes for specifying compressed or custom formats
+	DWORD dwRGBBitCount;							// Number of bits in an RGB
+	DWORD dwRBitMask;								// Red mask for reading color data
+	DWORD dwGBitMask;								// Green mask for reading color data
+	DWORD dwBBitMask;								// Blue mask for reading color data
+	DWORD dwABitMask;								// Alpha mask for reading color data
 };
 
 /*
