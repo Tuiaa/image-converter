@@ -3,13 +3,11 @@
 #include <vector>
 
 class BitmapHelper {
-private:
-	int totalSize;
-
-	void saveBitmapDefaultValues();
 public:
 	Bitmap bitmap;
 
 	void readBitmapImageFromFile(const char *fileName);
+	void saveBitmapDefaultValues();
+	void saveValuesReadFromFile(int width, int height);
 	void writeBitmap(const char *fileName, std::vector<int> compressedPixels);
 };

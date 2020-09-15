@@ -48,5 +48,6 @@ public:
 	DIBHeader dibHeader;
 	unsigned char* pixelData;
 
+	// Extra
 	std::vector<int> pixelDataAsIntVector;
 };

@@ -90,11 +90,6 @@ void DDSHelper::saveDDSDefaultValues() {
 	dds.header.dwSize = DDS_HEADER_DWSIZE;
 	dds.header.dwFlags = (DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT);
 
-	int width2 = dds.header.dwWidth;
-	int height2 = dds.header.dwHeight;
-	unsigned long pitch = std::max(1, ((width2 + 3) / 4)) * 8;	// block size is 8 bytes for DXT1 format, calculation is from documentation
-
-	dds.header.dwPitchOrLinearSize = pitch;
 	dds.header.dwDepth = 0;
 	dds.header.dwMipMapCount = 0;
 
@@ -128,12 +123,25 @@ void DDSHelper::saveDDSDefaultValues() {
 }
 
 /*
+ *		Save Values Read From File
+ *		- saves other than default DDS values
+ *		- values have been read from other file
+ */
+void DDSHelper::saveValuesReadFromFile(int width, int height) {
+	dds.header.dwWidth = width;
+	dds.header.dwHeight = height;
+
+	unsigned long pitch = std::max(1, ((width + 3) / 4)) * 8;	// block size is 8 bytes for DXT1 format, calculation is from documentation
+	dds.header.dwPitchOrLinearSize = pitch;
+}
+
+/*
  *		Write DDS File
  *		- Creates a new .dds file
  *		- Currently takes both pixel data straight from bitmap as well as the pixel data that has been through compression for testing purposes
  */
-void DDSHelper::writeDDSFile(const char *fileName, std::vector<int> pixelDataAfterCompression)
-{
+void DDSHelper::writeDDSFile(const char *fileName, std::vector<int> pixelDataAfterCompression) {
+
 	FILE *outputFile = fopen(fileName, "wb");
 
 	// Writing DDS Magic Number that contains four character code value 'DDS '
@@ -174,25 +182,10 @@ void DDSHelper::writeDDSFile(const char *fileName, std::vector<int> pixelDataAft
 	fwrite(&dds.header10.miscFlags2, 4, 1, outputFile);
 
 	// Writing the pixel data
-
-	/* Uncomment this if want to use pixels that have been through compression */
 	for (int i = 0; i < pixelDataAfterCompression.size(); i++)
 	{
 		fwrite(&pixelDataAfterCompression[i], 1, 1, outputFile);
 	}
-
-	/* Uncomment these if want to use pixels from bitmap without doing compression */
-	//int imageSize = (dds.header.dwWidth * dds.header.dwHeight * 4) / 8;		// DXT1 compressed images have 4 bitsPerPixel --> width * height * 4 is in bits/pixel so needs to be divided by 8 to get bytes
-	//fwrite(dds.bdata, imageSize, 1, outputFile);
-
-	/* Uncomment this if want to use pixels that have been saved from read .dds file */
-	//for (int i = 0; i < pixelDataFromDDSImageAsVector.size(); i++)
-	//{
-	//	  fwrite(&pixelDataFromDDSImageAsVector[i], 1, 1, outputFile);
-	//}
-
-	// Currently not using end settings, because I'm not sure I understood what those are
-	//fwrite(dds.bdata2, endSettingsSize, 1, outputFile);
 
 	fclose(outputFile);
 }

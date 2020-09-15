@@ -6,25 +6,52 @@
 #include "CompressionHelper.h"
 #include "DDSHelper.h"
 
-void compressAndCreateDDSFile(std::string inputtedFileNameString, std::string outputFileNameString) {
+void convertAndCreateDDSFile(std::string inputtedFileNameString, std::string outputFileNameString) {
 
-	if (!inputtedFileNameString.empty()) {
+	if (!inputtedFileNameString.empty() && !outputFileNameString.empty()) {
 		BitmapHelper bitmapHelper = BitmapHelper();
 		DDSHelper ddsHelper = DDSHelper();
 
 		/*	 READING	*/
+		std::cout << "\n\nReading the file";
 		bitmapHelper.readBitmapImageFromFile(inputtedFileNameString.c_str());
 
 		/*	 COMPRESSION	*/
+		std::cout << "\nDoing compression";
 		CompressionHelper compressionHelper = CompressionHelper();
 		compressionHelper.initializeSettingsForCompression(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.bitmap.pixelData, bitmapHelper.bitmap.pixelDataAsIntVector);
 		std::vector<int> compressedPixels = compressionHelper.startCompression();
 
 		/*	 SAVING		*/
-		bitmapHelper.writeBitmap(outputFileNameString.c_str(), compressedPixels);
+		std::cout << "\nSaving as .dds";
+		ddsHelper.dds = DDS();
+		ddsHelper.saveDDSDefaultValues();
+		ddsHelper.saveValuesReadFromFile(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height);
+		ddsHelper.writeDDSFile(outputFileNameString.c_str(), compressedPixels);
+	}
+}
 
-		//ddsHelper.readDDSImageFromFile("test-dxt1-dds-file.dds");
-		//ddsHelper.writeDDSFile("new-test-dxt1-dds-file.dds", compressedPixels);
+void convertAndCreateBitmapFile(std::string inputtedFileNameString, std::string outputFileNameString) {
+
+	if (!inputtedFileNameString.empty() && !outputFileNameString.empty()) {
+		BitmapHelper bitmapHelper = BitmapHelper();
+		DDSHelper ddsHelper = DDSHelper();
+
+		/*	 READING	*/
+		std::cout << "\n\nReading the file";
+		ddsHelper.readDDSImageFromFile(inputtedFileNameString.c_str());
+
+		/*	 COMPRESSION	*/
+		std::cout << "\nDoing decompression";
+		// Didn't finish compression/decompression so for now just uses the pixel data gotten straight from dds file
+		std::vector<int> decompressedPixels = ddsHelper.pixelDataFromDDSImageAsVector;
+
+		/*	 SAVING		*/
+		std::cout << "\nSaving as bitmap";
+		bitmapHelper.bitmap = Bitmap();
+		bitmapHelper.saveBitmapDefaultValues();
+		bitmapHelper.saveValuesReadFromFile(ddsHelper.dds.header.dwWidth, ddsHelper.dds.header.dwHeight);
+		bitmapHelper.writeBitmap(outputFileNameString.c_str(), decompressedPixels);
 	}
 }
 
@@ -43,16 +70,17 @@ int main()
 		extensionPosition = inputtedFileNameString.find_last_of(".");
 		inputtedFileNameWithoutExtension = inputtedFileNameString.substr(0, extensionPosition);
 		inputtedFileNameExtension = inputtedFileNameString.substr(inputtedFileNameString.find_last_of("."));
-		std::string outputFileNameString = inputtedFileNameWithoutExtension + "-converted" + inputtedFileNameExtension;
 
 		std::cout << "\nThe file you input was: " << inputtedFileNameWithoutExtension << inputtedFileNameExtension;
 
 		if (inputtedFileNameExtension == ".bmp") {
-			compressAndCreateDDSFile(inputtedFileNameString, outputFileNameString);
+			std::string outputFileNameString = inputtedFileNameWithoutExtension + "-converted" + ".dds";
+			convertAndCreateDDSFile(inputtedFileNameString, outputFileNameString);
 
 		}
 		else if (inputtedFileNameExtension == ".dds") {
-
+			std::string outputFileNameString = inputtedFileNameWithoutExtension + "-converted" + ".bmp";
+			convertAndCreateBitmapFile(inputtedFileNameString, outputFileNameString);
 		}
 		else {
 			std::cout << "\nFile was not .bmp or .dds";

@@ -46,8 +46,6 @@ void BitmapHelper::readBitmapImageFromFile(const char *fileName) {
 	for (int i = 0; i < bitmap.dibHeader.imageSize; i++) {
 		bitmap.pixelDataAsIntVector.push_back(bitmap.pixelData[i]);
 	}
-
-	saveBitmapDefaultValues();
 }
 
 /*
@@ -64,6 +62,8 @@ void BitmapHelper::saveBitmapDefaultValues() {
 
 	// DIB Header
 	bitmap.dibHeader.infoHeaderSize = INFO_HEADER_SIZE;
+	bitmap.dibHeader.colorPlanes = 1;
+	bitmap.dibHeader.bitsPerPixel = 24;
 	bitmap.dibHeader.compression = NO_COMPRESSION;
 	bitmap.dibHeader.horizontalResolution = 11811;						//300 dpi
 	bitmap.dibHeader.verticalResolution = 11811;						//300 dpi
@@ -72,10 +72,22 @@ void BitmapHelper::saveBitmapDefaultValues() {
 }
 
 /*
+ *		Save Values Read From File
+ *		- saves other than default bitmap values
+ *		- values have been read from other file
+ */
+void BitmapHelper::saveValuesReadFromFile(int width, int height) {
+	bitmap.dibHeader.width = width;
+	bitmap.dibHeader.height = height;
+	bitmap.bitmapFileHeader.filesize = (width * height * 3) + HEADER_SIZE + INFO_HEADER_SIZE;	// times 3, because 3 color values, R, G an B
+	bitmap.dibHeader.imageSize = width * height * 3;
+}
+
+/*
  *		Write Bitmap
 ¨*		- creates a new bitmap file
  */
-void BitmapHelper::writeBitmap(const char *fileName, std::vector<int> compressedPixels)
+void BitmapHelper::writeBitmap(const char *fileName, std::vector<int> pixelData)
 {
 	FILE *outputFile = fopen(fileName, "wb");
 
@@ -102,7 +114,14 @@ void BitmapHelper::writeBitmap(const char *fileName, std::vector<int> compressed
 	// Writing the pixel data
 	for (int i = 0; i < bitmap.dibHeader.imageSize; i++)
 	{
-		fwrite(&bitmap.pixelData[i], 1, 1, outputFile);
+		// Writing temp data so the file will be created because decompression was not finished
+		if (i >= pixelData.size() - 10)
+		{
+			fwrite("0", 1, 1, outputFile);
+		}
+		else {
+			fwrite(&pixelData[i], 1, 1, outputFile);
+		}
 	}
 
 	fclose(outputFile);
