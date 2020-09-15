@@ -66,7 +66,7 @@ private:
 
 	/*	Helper functions  */
 	int calculateHowManyChunksAreNeeded(int width, int height);
-	void calculateAllPixelsNeededForRowOfChunks(int startingPoint);
+	void calculateAllPixelsNeededForOneRowOfChunks(int startingPoint);
 	void calculatePixelsFromOneRowOfImage(int startingPoint);
 	int getCurrentChunkStartingPixelPosition(int row);
 

@@ -119,11 +119,11 @@ void CompressionHelper::sliceImageIntoChunks() {
 }
 
 /*
- *		Calculate All Pixels Needed For Row Of Chunks
+ *		Calculate All Pixels Needed For One Row Of Chunks
  *		- find all pixels that are needed to populate one row of chunks
  *		- one chunk is 4x4, in one row there are widthOfImage/chunkSize number of chunks
  */
-void CompressionHelper::calculateAllPixelsNeededForRowOfChunks(int startingPoint) {
+void CompressionHelper::calculateAllPixelsNeededForOneRowOfChunks(int startingPoint) {
 	
 	pixelsNeededForOneRowOfChunks.clear();
 	int length = amountOfPixelsInARowOfChunks * 3;		// times 3, because 3 color values, R, G an B
@@ -156,7 +156,7 @@ void CompressionHelper::calculatePixelsFromOneRowOfImage(int startingPoint) {
  */
 void CompressionHelper::sliceImageIntoOneChunkRow(int amountOfChunksPopulated, int startingPixel) {
 	
-	calculateAllPixelsNeededForRowOfChunks(startingPixel);
+	calculateAllPixelsNeededForOneRowOfChunks(startingPixel);
 
 	int currentRowStartingChunkPosition = amountOfChunksPopulated;
 	int currentRowLastChunkPosition = currentRowStartingChunkPosition + totalAmountOfChunksHorizontally;

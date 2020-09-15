@@ -115,7 +115,7 @@ void BitmapHelper::writeBitmap(const char *fileName, std::vector<int> pixelData)
 	for (int i = 0; i < bitmap.dibHeader.imageSize; i++)
 	{
 		// Writing temp data so the file will be created because decompression was not finished
-		if (i >= pixelData.size() - 10)
+		if (i >= pixelData.size() - 1)
 		{
 			fwrite("0", 1, 1, outputFile);
 		}
