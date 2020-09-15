@@ -46,12 +46,14 @@ void BitmapHelper::readBitmapImageFromFile(const char *fileName) {
 	for (int i = 0; i < bitmap.dibHeader.imageSize; i++) {
 		bitmap.pixelDataAsIntVector.push_back(bitmap.pixelData[i]);
 	}
+
+	saveBitmapDefaultValues();
 }
 
 /*
  *		Save Bitmap Values
- *		- takes the read values and saves them in the created bitmap object
- *		- used when wanting to create a new bitmap file after reading .dds file
+ *		- makes sure the read bitmap has the required fields set
+ *		- also used when wanting to create a new bitmap file after reading .dds file
  */
 void BitmapHelper::saveBitmapDefaultValues() {
 

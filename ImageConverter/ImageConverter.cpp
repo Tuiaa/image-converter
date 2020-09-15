@@ -6,48 +6,104 @@
 #include "CompressionHelper.h"
 #include "DDSHelper.h"
 
-int main()
-{
-	std::string inputtedFileNameString;
-	std::cout << "Enter the name of bitmap file you wish to compress (without .bmp):\n";
-	std::cin >> inputtedFileNameString;
-
-	std::string inputtedFileNameStringWithoutExtension = inputtedFileNameString;
-	inputtedFileNameString = inputtedFileNameString + ".bmp";
-	const char *inputtedFileName = inputtedFileNameString.c_str();
-
-	std::cout << "The file you input was:" << inputtedFileNameString;
-
-	std::string outputFileNameString = inputtedFileNameStringWithoutExtension + "_compressed.bmp";
-	const char *outputFileName = outputFileNameString.c_str();
+void compressAndCreateDDSFile(std::string inputtedFileNameString, std::string outputFileNameString) {
 
 	if (!inputtedFileNameString.empty()) {
 		BitmapHelper bitmapHelper = BitmapHelper();
 		DDSHelper ddsHelper = DDSHelper();
-		inputtedFileName = "test-bmp-file.bmp";
-		outputFileName = "test-bmp-file-compressed.bmp";
 
-		std::cout << "\n\ngoing into reading bitmap stuff";
 		/*	 READING	*/
-		bitmapHelper.readBitmapImageFromFile(inputtedFileName);
+		bitmapHelper.readBitmapImageFromFile(inputtedFileNameString.c_str());
 
-		std::cout << "\n\ngoing into compression stuff";
 		/*	 COMPRESSION	*/
 		CompressionHelper compressionHelper = CompressionHelper();
 		compressionHelper.initializeSettingsForCompression(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.bitmap.pixelData, bitmapHelper.bitmap.pixelDataAsIntVector);
 		std::vector<int> compressedPixels = compressionHelper.startCompression();
 
-		std::cout << "\n\ngoing into saving stuff";
 		/*	 SAVING		*/
-		bitmapHelper.writeBitmap(outputFileName, compressedPixels);
+		bitmapHelper.writeBitmap(outputFileNameString.c_str(), compressedPixels);
 
-		ddsHelper.readDDSImageFromFile("test-dxt1-dds-file.dds");
-		ddsHelper.writeDDSFile("new-test-dxt1-dds-file.dds", compressedPixels);
+		//ddsHelper.readDDSImageFromFile("test-dxt1-dds-file.dds");
+		//ddsHelper.writeDDSFile("new-test-dxt1-dds-file.dds", compressedPixels);
 	}
-	else {
-		std::cout << "Filename was not supported, please restart the app and try again!";
+}
+
+int main()
+{
+	std::string inputtedFileNameString;
+	std::cout << "Enter the name of the file you wish to convert (write the whole name, file extension included)\n";
+	std::cin >> inputtedFileNameString;
+
+	size_t extensionPosition;
+	std::string inputtedFileNameWithoutExtension;
+	std::string inputtedFileNameExtension;
+
+	try
+	{
+		extensionPosition = inputtedFileNameString.find_last_of(".");
+		inputtedFileNameWithoutExtension = inputtedFileNameString.substr(0, extensionPosition);
+		inputtedFileNameExtension = inputtedFileNameString.substr(inputtedFileNameString.find_last_of("."));
+		std::string outputFileNameString = inputtedFileNameWithoutExtension + "-converted" + inputtedFileNameExtension;
+
+		std::cout << "\nThe file you input was: " << inputtedFileNameWithoutExtension << inputtedFileNameExtension;
+
+		if (inputtedFileNameExtension == ".bmp") {
+			compressAndCreateDDSFile(inputtedFileNameString, outputFileNameString);
+
+		}
+		else if (inputtedFileNameExtension == ".dds") {
+
+		}
+		else {
+			std::cout << "\nFile was not .bmp or .dds";
+		}
+	}
+	catch (std::out_of_range& exception)
+	{
+		std::cout << "\nFile was not found";
 	}
 
 	std::cout << "\nPress any key to close the console\n";
 	_getch();
+
+
+	//std::string inputtedFileNameString;
+	//std::cout << "Enter the name of bitmap file you wish to compress (without .bmp):\n";
+	//std::cin >> inputtedFileNameString;
+
+	//std::string inputtedFileNameStringWithoutExtension = inputtedFileNameString;
+	//inputtedFileNameString = inputtedFileNameString + ".bmp";
+	//const char *inputtedFileName = inputtedFileNameString.c_str();
+
+	//std::cout << "The file you input was:" << inputtedFileNameString;
+
+	//std::string outputFileNameString = inputtedFileNameStringWithoutExtension + "_compressed.bmp";
+	//const char *outputFileName = outputFileNameString.c_str();
+
+	//if (!inputtedFileNameString.empty()) {
+	//	BitmapHelper bitmapHelper = BitmapHelper();
+	//	DDSHelper ddsHelper = DDSHelper();
+	//	inputtedFileName = "test-bmp-file.bmp";
+	//	outputFileName = "test-bmp-file-compressed.bmp";
+
+	//	std::cout << "\n\ngoing into reading bitmap stuff";
+	//	/*	 READING	*/
+	//	bitmapHelper.readBitmapImageFromFile(inputtedFileName);
+
+	//	std::cout << "\n\ngoing into compression stuff";
+	//	/*	 COMPRESSION	*/
+	//	CompressionHelper compressionHelper = CompressionHelper();
+	//	compressionHelper.initializeSettingsForCompression(bitmapHelper.bitmap.dibHeader.width, bitmapHelper.bitmap.dibHeader.height, bitmapHelper.bitmap.pixelData, bitmapHelper.bitmap.pixelDataAsIntVector);
+	//	std::vector<int> compressedPixels = compressionHelper.startCompression();
+
+	//	std::cout << "\n\ngoing into saving stuff";
+	//	/*	 SAVING		*/
+	//	bitmapHelper.writeBitmap(outputFileName, compressedPixels);
+
+	//	ddsHelper.readDDSImageFromFile("test-dxt1-dds-file.dds");
+	//	ddsHelper.writeDDSFile("new-test-dxt1-dds-file.dds", compressedPixels);
+	//}
+	//else {
+	//	std::cout << "Filename was not supported, please restart the app and try again!";
+	//}
 }
